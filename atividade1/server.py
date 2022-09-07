@@ -17,6 +17,7 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
 
     diretorio_atual = '/'
     sessao_logada = False
+    user_atual = None
 
     while True:
         mensagem_recebida = conexao.recv(1024).decode()
@@ -25,39 +26,49 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
         comando_recebido = mensagem_recebida.split(" ")
 
         if comando_recebido[0].lower() == "connect":
-            print("Comando connect")
+            print(f"Recebendo CONNECT do cliente {endereco}")
             if len(comando_recebido) != 2:
                 # Parametros enviados inválidos
+                print(f"Erro CONNECT do cliente {endereco}")
                 conexao.sendall(b"ERROR")
                 continue
             try:
                 user,password = comando_recebido[1].split(",")
             except ValueError:
+                print(f"Erro CONNECT do cliente {endereco}")
                 conexao.sendall(b"ERROR")
                 continue
 
             if valida_login(user, password):
-                print(f"Logando o usuário {user}")
+                print(f"Logando o usuário {user} do endereço {endereco}")
                 sessao_logada = True
+                user_atual = user
                 conexao.sendall(b"SUCCESS")
             else:
+                print(f"Erro CONNECT do usuário {user} para o cliente {endereco}")
                 conexao.sendall(b"ERROR")
                 continue
 
         elif comando_recebido[0].lower() == "pwd":
+            print(f"Recebendo PWD do cliente {endereco} e user {user_atual}")
             if not sessao_logada:
+                print(f"Cliente {endereco} tentando PWD sem login")
                 conexao.sendall(b"ERROR")
                 continue
 
+            print(f"Enviando PWD {diretorio_atual} para o cliente {endereco} e user {user_atual}")
             conexao.sendall((diretorio_atual).encode("UTF-8"))
 
         elif comando_recebido[0].lower() == "chdir":
+            print(f"Recebendo CHDIR do cliente {endereco} e user {user_atual}")
             if not sessao_logada:
+                print(f"Cliente {endereco} tentando CHDIR sem login")
                 conexao.sendall(b"ERROR")
                 continue
 
             if len(comando_recebido) != 2:
                 # Caso tenha sido passado mais de dois parâmetros, retorna erro
+                print(f"Parâmetros errados do cliente {endereco} e user {user_atual} para o comando CHDIR")
                 conexao.sendall(b"ERROR")
                 continue
 
@@ -69,41 +80,52 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
 
             # Verifica se o diretório informado é válido
             if os.path.isdir(diretorio_atual_maquina + novo_dir):
+                print(f"Alterando o diretório de {diretorio_atual} para {novo_dir} para o cliente {endereco} e user {user_atual}")
                 diretorio_atual = novo_dir
                 conexao.sendall(b"SUCCESS")
             else:
                 # Caso nao tenha passado um diretorio correto, retorna erro
+                print(f"Diretório {novo_dir} informado inválido para o cliente {endereco} e user {user_atual}")
                 conexao.sendall(b"ERROR")
                 continue
 
         elif comando_recebido[0].lower() == "getfiles":
+            print(f"Recebendo GETFILES do cliente {endereco} e user {user_atual}")
             if not sessao_logada:
+                print(f"Cliente {endereco} tentando GETFILES sem login")
                 conexao.sendall(b"ERROR")
                 continue
+
             arquivos = get_files(diretorio_atual_maquina + diretorio_atual)
+            print(f"Encontrados {str(len(arquivos))} arquivos na solicitação do cliente {endereco} e user {user_atual}")
             conexao.sendall(str(len(arquivos)).encode())
             time.sleep(0.01)
             for item in arquivos:
                 time.sleep(0.01)
+                print(f"Enviando nome arquivo {item} para o cliente {endereco} e user {user_atual}")
                 conexao.sendall(item.encode())
 
         elif comando_recebido[0].lower() == "getdirs":
+            print(f"Recebendo GETDIRS do cliente {endereco} e user {user_atual}")
             if not sessao_logada:
+                print(f"Cliente {endereco} tentando GETDIRS sem login")
                 conexao.sendall(b"ERROR")
                 continue
             diretorios = get_dirs(diretorio_atual_maquina + diretorio_atual)
+            print(f"Encontrados {str(len(diretorios))} diretorios na solicitação do cliente {endereco} e user {user_atual}")
             conexao.sendall(str(len(diretorios)).encode())
             time.sleep(0.01)
             for item in diretorios:
                 conexao.sendall(item.encode())
+                print(f"Enviando nome diretorio {item} para o cliente {endereco} e user {user_atual}")
                 time.sleep(0.01)
 
         elif comando_recebido[0].lower() == "exit":
-            print(f"Finalizando conexão com o cliente {endereco}")
+            print(f"Finalizando conexão com o cliente {endereco} e user {user_atual}")
             break
 
         else:
-            print(f"Comando recebido inválido: {mensagem_recebida}")
+            print(f"Comando recebido inválido {mensagem_recebida} do cliente {endereco}")
 
 def valida_login(user: str, passwd: str) -> bool:
     """
