@@ -46,9 +46,9 @@ def main():
                     nome_dir = sock.recv(1024)
                     print(nome_dir.decode())
 
-
             elif comando_digitado_splitado[0].lower() == "exit":
-                print(f"Finalizando conexão com o cliente {endereco}")
+                sock.sendall(b"EXIT")
+                print(f"Finalizando conexão ")
                 break
 
             # sock.sendall(comando_digitado[0].encode())
