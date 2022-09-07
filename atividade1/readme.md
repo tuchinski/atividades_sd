@@ -35,6 +35,7 @@ de múltiplos clientes. Use o TCP. As mensagens de solicitação estão no forma
 - Em um terminal, executar primeiramente o servidor, com o comando `python3 server.py`
 - Posteriormente, executar o cliente com o comando `python3 client.py`
 - Com isso, cliente e servidor já se conectaram, e agora é só utilizar os comandos disponibilizados
+- O servidor suporta múltiplos clientes
 - Obs: para realizar qualquer operação, a sessão precisa estar logada
   - Existem 2 usuários pré cadastrados com as seguintes credenciais:
     - User: admin Senha: admin
