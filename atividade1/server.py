@@ -11,7 +11,7 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
     :param endereco: tupla com o endereço e porta do cliente
     """
 
-    diretorio_atual = ''
+    diretorio_atual = '/'
 
     while True:
         mensagem_recebida = conexao.recv(1024).decode()
@@ -23,9 +23,29 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
             print("Comando connect")
         elif comando_recebido[0].lower() == "pwd":
             print("Comando pwd")
-            conexao.sendall((diretorio_atual + '/').encode("UTF-8"))
+            conexao.sendall((diretorio_atual).encode("UTF-8"))
         elif comando_recebido[0].lower() == "chdir":
             print("Comando chdir")
+            if len(comando_recebido) != 2:
+                # Caso tenha sido passado mais de dois parâmetros, retorna erro
+                conexao.sendall("ERROR")
+                break
+
+            # voltando um diretório
+            if comando_recebido[1] == '..':
+                novo_dir = "/".join(diretorio_atual.split("/")[0:-2]) + "/" # Removendo o diretório atual
+            else:
+                novo_dir = diretorio_atual  + comando_recebido[1] + '/'
+
+            # Verifica se o diretório informado é válido
+            if os.path.isdir(diretorio_atual_maquina + novo_dir):
+                diretorio_atual = novo_dir
+                conexao.sendall(b"SUCCESS")
+            else:
+                # Caso nao tenha passado um diretorio correto, retorna erro
+                conexao.sendall(b"ERROR")
+                break
+
         elif comando_recebido[0].lower() == "getfiles":
             arquivos = get_files(diretorio_atual_maquina + diretorio_atual)
             conexao.sendall(str(len(arquivos)).encode())
