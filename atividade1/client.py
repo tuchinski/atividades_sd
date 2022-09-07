@@ -1,5 +1,5 @@
 import socket
-
+from hashlib import sha512
 
 def main():
     print("Iniciando o cliente")
@@ -15,10 +15,29 @@ def main():
             comando_digitado_splitado = comando_digitado_original.split(" ")
 
             if comando_digitado_splitado[0].lower() == "connect":
-                print("Comando connect")
+
+                # Convertendo senha para SHA-512
+                try:
+                    user,senha = comando_digitado_splitado[1].split(",")
+
+                    hash_gerada = sha512(str(senha).encode()).hexdigest()
+                except ValueError:
+                    print("Usuário e senha digitado de forma incorreta")
+                    continue
+
+                sock.sendall(f"CONNECT {user},{hash_gerada}".encode())
+
+                retorno_login = sock.recv(7).decode()
+                if retorno_login == "SUCCESS":
+                    print("Usuário logado com sucesso")
+                elif retorno_login == "ERROR":
+                    print("Erro ao realizar login, usuário e/ou senha incorreto")
+                else: print("Erro ao conectar com o servidor")
+
             elif comando_digitado_splitado[0].lower() == "pwd":
                 sock.sendall(b"PWD")
                 retorno_pwd = sock.recv(1024)
+
                 print(retorno_pwd.decode())
 
             elif comando_digitado_splitado[0].lower() == "chdir":
@@ -34,14 +53,23 @@ def main():
 
             elif comando_digitado_splitado[0].lower() == "getfiles":
                 sock.sendall(b'GETFILES')
-                qtde_files = int(sock.recv(100).decode())
+                retorno = sock.recv(100).decode()
+                if retorno == "ERROR":
+                    print("Erro ao buscar arquivos, verifique se a sessão está logada")
+                    continue
+
+                qtde_files = int(retorno)
                 for _ in range(qtde_files):
                     nome_file = sock.recv(1024)
                     print(nome_file.decode())
 
             elif comando_digitado_splitado[0].lower() == "getdirs":
                 sock.sendall(b'GETDIRS')
-                qtde_dirs = int(sock.recv(100).decode())
+                retorno = sock.recv(100).decode()
+                if retorno == "ERROR":
+                    print("Erro ao buscar diretórios, verifique se a sessão está logada")
+                    continue
+                qtde_dirs = int(retorno)
                 for _ in range(qtde_dirs):
                     nome_dir = sock.recv(1024)
                     print(nome_dir.decode())
