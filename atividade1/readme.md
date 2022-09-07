@@ -25,11 +25,6 @@ de múltiplos clientes. Use o TCP. As mensagens de solicitação estão no forma
 - **EXIT**
   * Finaliza a conexão
 
-      - Como compilar
-      - Como executar
-      - Bibliotecas usadas (descrever as não padrões)
-      - Exemplo de uso
-
 ### Pré Requesitos
 - Pontos necessários para a execução
   - Ter dentro do diretório onde se encontra o cliente e servidor, uma pasta com o nome _server_files_
@@ -40,3 +35,9 @@ de múltiplos clientes. Use o TCP. As mensagens de solicitação estão no forma
 - Em um terminal, executar primeiramente o servidor, com o comando `python3 server.py`
 - Posteriormente, executar o cliente com o comando `python3 client.py`
 - Com isso, cliente e servidor já se conectaram, e agora é só utilizar os comandos disponibilizados
+- Obs: para realizar qualquer operação, a sessão precisa estar logada
+  - Existem 2 usuários pré cadastrados com as seguintes credenciais:
+    - User: admin Senha: admin
+    - User: teste Senha: 123
+  - Para cadastrar mais usuários, é necessário criar uma nova linha no arquivo `users` separando o usuário e a senha com `:`
+    - Obs: a senha precisa estar criptografada em SHA-512
