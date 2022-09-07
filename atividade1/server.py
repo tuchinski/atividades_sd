@@ -1,3 +1,9 @@
+"""
+Descrição: Servidor que processa as request vindas de n clientes
+Autores: Ilzimara e Leonardo
+Data de criação: 07/09/2022
+"""
+
 import os.path
 import socket
 import threading

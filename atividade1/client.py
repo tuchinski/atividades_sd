@@ -1,3 +1,9 @@
+"""
+Descrição: Cliente que realiza as requisições para o server
+Autores: Ilzimara e Leonardo
+Data de criação: 07/09/2022
+"""
+
 import socket
 from hashlib import sha512
 
