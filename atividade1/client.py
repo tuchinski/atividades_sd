@@ -24,12 +24,16 @@ def main():
             elif comando_digitado[0].lower() == "chdir":
                 print("Comando chdir")
             elif comando_digitado[0].lower() == "getfiles":
-                print("Comando getfiles")
+                sock.sendall(b'GETFILES')
+                qtde_files = int(sock.recv(100).decode())
+                for _ in range(qtde_files):
+                    nome_file = sock.recv(1024)
+                    print(nome_file.decode())
+
             elif comando_digitado[0].lower() == "getdirs":
                 sock.sendall(b'GETDIRS')
-
                 qtde_dirs = int(sock.recv(100).decode())
-                for i in range(qtde_dirs):
+                for _ in range(qtde_dirs):
                     nome_dir = sock.recv(1024)
                     print(nome_dir.decode())
 

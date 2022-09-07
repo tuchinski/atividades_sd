@@ -27,14 +27,20 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
         elif comando_recebido[0].lower() == "chdir":
             print("Comando chdir")
         elif comando_recebido[0].lower() == "getfiles":
-            print("Comando getfiles")
+            arquivos = get_files(diretorio_atual_maquina + diretorio_atual)
+            conexao.sendall(str(len(arquivos)).encode())
+            time.sleep(0.01)
+            for item in arquivos:
+                time.sleep(0.01)
+                conexao.sendall(item.encode())
+
         elif comando_recebido[0].lower() == "getdirs":
-            print("Comando getdirs")
             diretorios = get_dirs(diretorio_atual_maquina + diretorio_atual)
             conexao.sendall(str(len(diretorios)).encode())
-            time.sleep(0.1)
+            time.sleep(0.01)
             for item in diretorios:
                 conexao.sendall(item.encode())
+                time.sleep(0.01)
 
         elif comando_recebido[0].lower() == "exit":
             print(f"Finalizando conexão com o cliente {endereco}")
@@ -43,7 +49,12 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
             print(f"Comando recebido inválido: {mensagem_recebida}")
 
 def get_dirs(nome_dir: str) -> list:
-
+    """
+    Retorna todos os subdiretórios do diretório corrente
+    :param nome_dir: nome do diretório raiz
+    :return: lista com os diretórios
+    :rtype: list
+    """
     diretorios_disponiveis = []
     # busca todos os subdiretórios
     for file in os.listdir(nome_dir):
@@ -51,6 +62,19 @@ def get_dirs(nome_dir: str) -> list:
             diretorios_disponiveis.append(file)
     return diretorios_disponiveis
 
+def get_files(nome_dir: str) -> list:
+    """
+    Retorna todos os arquivos do diretório informado por parâmetro
+    :param nome_dir:
+    :return: lista com os arquivos do diretório
+    :rtype: list
+    """
+    arquivos_disponiveis = []
+    # busca todos os arquivos
+    for file in os.listdir(nome_dir):
+        if os.path.isfile(nome_dir + '/' + file):
+            arquivos_disponiveis.append(file)
+    return arquivos_disponiveis
 
 def main():
     print("Iniciando o server")
