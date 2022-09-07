@@ -26,7 +26,14 @@ def main():
             elif comando_digitado[0].lower() == "getfiles":
                 print("Comando getfiles")
             elif comando_digitado[0].lower() == "getdirs":
-                print("Comando getdirs")
+                sock.sendall(b'GETDIRS')
+
+                qtde_dirs = int(sock.recv(100).decode())
+                for i in range(qtde_dirs):
+                    nome_dir = sock.recv(1024)
+                    print(nome_dir.decode())
+
+
             elif comando_digitado[0].lower() == "exit":
                 print(f"Finalizando conexão com o cliente {endereco}")
                 break

@@ -1,8 +1,9 @@
+import os.path
 import socket
 import threading
+import time
 
-
-
+diretorio_atual_maquina = './server_files'
 def conexao_recebida(conexao: socket.socket, endereco: tuple):
     """
     Trata a conexão recebida de um cliente
@@ -10,7 +11,8 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
     :param endereco: tupla com o endereço e porta do cliente
     """
 
-    diretorio_atual = '/'
+    diretorio_atual = ''
+
     while True:
         mensagem_recebida = conexao.recv(1024).decode()
         if not mensagem_recebida:
@@ -21,18 +23,33 @@ def conexao_recebida(conexao: socket.socket, endereco: tuple):
             print("Comando connect")
         elif comando_recebido[0].lower() == "pwd":
             print("Comando pwd")
-            conexao.sendall(diretorio_atual.encode("UTF-8"))
+            conexao.sendall((diretorio_atual + '/').encode("UTF-8"))
         elif comando_recebido[0].lower() == "chdir":
             print("Comando chdir")
         elif comando_recebido[0].lower() == "getfiles":
             print("Comando getfiles")
         elif comando_recebido[0].lower() == "getdirs":
             print("Comando getdirs")
+            diretorios = get_dirs(diretorio_atual_maquina + diretorio_atual)
+            conexao.sendall(str(len(diretorios)).encode())
+            time.sleep(0.1)
+            for item in diretorios:
+                conexao.sendall(item.encode())
+
         elif comando_recebido[0].lower() == "exit":
             print(f"Finalizando conexão com o cliente {endereco}")
             break
         else:
             print(f"Comando recebido inválido: {mensagem_recebida}")
+
+def get_dirs(nome_dir: str) -> list:
+
+    diretorios_disponiveis = []
+    # busca todos os subdiretórios
+    for file in os.listdir(nome_dir):
+        if os.path.isdir(nome_dir + '/' + file):
+            diretorios_disponiveis.append(file)
+    return diretorios_disponiveis
 
 
 def main():
