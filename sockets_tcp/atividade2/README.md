@@ -24,7 +24,7 @@ As respostas possuem o seguinte cabeçalho em comum:
 1 byte: código do comando – *Command Identifier (0x01 a 0x04)*
 1 byte: status code (1-SUCCESS, 2-ERROR) – *Status Code*
 
-![](imgs_readme/cabecalho response.png)
+![](imgs_readme/cabecalho_response.png)
 
 ----
 - para o ADDFILE, adicionam-se os campos na solicitação:
