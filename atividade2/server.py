@@ -9,14 +9,21 @@ import logging
 diretorio_padrao = "arquivos/"
 
 
-def remove_bad_characters(str_entrada):
+def remove_bad_characters(str_entrada) -> str:
     """
     Remove os caracteres "\n" e "\t"
+    :param str_entrada: string de entrada para tratamento
+    :return: string tratada, removendo caracteres indesejados
     """
     return str_entrada.replace("\n", '').replace("\t", "")
 
 
-def monta_response_inicial(ident_comando):
+def monta_response_inicial(ident_comando) -> bytes:
+    """
+    Monta o corpo inicial do pacote de response
+    :param ident_comando: identificador do comando 1,2,3 ou 4
+    :return: o corpo do cabeçalho em bytes
+    """
     response_inicial = b""
 
     # Add Message Type = 2
@@ -59,6 +66,10 @@ def main():
 
 
 def newaddfile(conexao: socket.socket):
+    """
+    Trata as requests de adição de arquivos
+    :param conexao: conexao do tipo socket.socket
+    """
     logging.info("Iniciando ADDFILE")
     print("[LOG] - Retornando ADDFILE")
 
@@ -84,6 +95,10 @@ def newaddfile(conexao: socket.socket):
 
 
 def newdeletefile(conexao: socket.socket):
+    """
+    Trata a requisição de deletar o arquivo
+    :param conexao: conexao do tipo socket.socket
+    """
     logging.info("Iniciando DELETE")
     print("[LOG] - Retornando DELETE")
     tam_nome_arq_byte = conexao.recv(1)
@@ -111,6 +126,10 @@ def newdeletefile(conexao: socket.socket):
 
 
 def newgetfileslist(conexao: socket.socket):
+    """
+    Trata a requisição de buscar as listas dos arquivos
+    :param conexao: conexao do tipo socket.socket
+    """
     logging.info('Iniciando GETFILESLIST')
     print("[LOG] - Retornando GETFILESLIST")
 
@@ -146,6 +165,10 @@ def newgetfileslist(conexao: socket.socket):
     #     conexao.sendall(response_erro)
 
 def newgetfile(conexao: socket.socket):
+    """
+    Trata a requisição de enviar um arquivo para o cliente
+    :param conexao: conexao do tipo socket.socket
+    """
     logging.info('Iniciando GETFILE')
     print("[LOG] - Retornando GETFILE")
 
@@ -186,7 +209,12 @@ def newgetfile(conexao: socket.socket):
 
 
 def resolve_mensagem_recebida(conexao: socket.socket, addr):
-
+    """
+    Trata a conexão recebida e redireciona para o método específico
+    Trata a conexão recebida e redireciona para o método específico
+    :param conexao:
+    :param addr:
+    """
     while True:
         mensagem = conexao.recv(2)
         if len(mensagem) == 0:
