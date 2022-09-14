@@ -58,7 +58,7 @@ def main():
             threading.Thread(target=resolve_mensagem_recebida, args=(conn, addr)).start()
 
 
-def newaddfile(conexao):
+def newaddfile(conexao: socket.socket):
     logging.info("Iniciando ADDFILE")
     print("[LOG] - Retornando ADDFILE")
 
@@ -83,7 +83,7 @@ def newaddfile(conexao):
         print(f"[LOG] - Arquivo {nome_arq_bytes.decode('utf-8')} recebido")
 
 
-def newdeletefile(conexao):
+def newdeletefile(conexao: socket.socket):
     logging.info("Iniciando DELETE")
     print("[LOG] - Retornando DELETE")
     tam_nome_arq_byte = conexao.recv(1)
@@ -110,7 +110,7 @@ def newdeletefile(conexao):
         conexao.sendall(response)
 
 
-def newgetfileslist(conexao):
+def newgetfileslist(conexao: socket.socket):
     logging.info('Iniciando GETFILESLIST')
     print("[LOG] - Retornando GETFILESLIST")
 
@@ -185,7 +185,7 @@ def newgetfile(conexao: socket.socket):
             
 
 
-def resolve_mensagem_recebida(conexao, addr):
+def resolve_mensagem_recebida(conexao: socket.socket, addr):
 
     while True:
         mensagem = conexao.recv(2)
