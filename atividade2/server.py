@@ -1,3 +1,8 @@
+"""
+Descrição: Servidor que processa as request vindas de n clientes
+Autores: Ilzimara e Leonardo
+Data de criação: 07/09/2022
+"""
 import json
 from datetime import datetime
 import socket

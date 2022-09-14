@@ -1,3 +1,8 @@
+"""
+Descrição: Cliente que realiza requisições para o servidor
+Autores: Ilzimara e Leonardo
+Data de criação: 07/09/2022
+"""
 import os
 import socket
 import json
