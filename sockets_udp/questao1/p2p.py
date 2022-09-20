@@ -72,21 +72,21 @@ def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> by
     return bytes_mensagem
 
 
-def envia_mensagem_normal(sock: socket.socket):
+def envia_mensagem_normal(sock: socket.socket, apelido: str):
     msg_enviar = input("Digite a msg que deseja enviar: ")
 
-    bytes_msg  = monta_packet_mensagem("1", apelido_definido, msg_enviar)
+    bytes_msg  = monta_packet_mensagem("1", apelido, msg_enviar)
     sock.sendto(bytes_msg, outro_server)
     
 
 
-def envia_mensagens(sock: socket.socket):
+def envia_mensagens(sock: socket.socket, apelido: str):
     while True:
         tipo_msg = input("Digite o tipo de mensagem que quer enviar: ")
 
         if tipo_msg == "1":
             # mensagem normal
-            envia_mensagem_normal(sock)
+            envia_mensagem_normal(sock, apelido)
             pass
         elif tipo_msg == "2":
             # emoji
@@ -111,7 +111,7 @@ def main():
         s.bind((host, porta))
 
         t1 = Thread(target=trata_pacote_recebido, args=(s,))
-        t2 = Thread(target=envia_mensagens, args=(s,))
+        t2 = Thread(target=envia_mensagens, args=(s,apelido_definido, ))
 
         t1.start()
         t2.start()
