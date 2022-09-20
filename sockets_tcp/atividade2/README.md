@@ -39,10 +39,10 @@ As respostas possuem o seguinte cabeçalho em comum:
 	- 1 byte: tamanho do nome (1-255)
 	- variável [1 a 255]: nome do arquivo
 ----
-para o GETFILE. adicionam-se os campos na resposta:
+- para o GETFILE. adicionam-se os campos na resposta:
 
-- 4 bytes: tamanho do arquivo (big endian order) em bytes
-- variável [1 a 2 32 ]: bytes do arquivo.
+	- 4 bytes: tamanho do arquivo (big endian order) em bytes
+	- variável [1 a 2 32 ]: bytes do arquivo.
 
 ---
 
@@ -52,14 +52,14 @@ para o GETFILE. adicionam-se os campos na resposta:
 
 
 
-### Pré Requesitos
+## Pré Requesitos
 
 - Pontos necessários para a execução
   - Python 3.x instalado
 
 
 
-### Execução
+## Execução
 
 - Em um terminal, executar primeiramente o servidor com o comando `python3 server.py`
 - Logo após a execução do servidor, executar o cliente com o comando `python3 cliente.py`
