@@ -3,9 +3,9 @@ from threading import Thread
 
 # host e porta do servidor p2p
 porta = 5678
-host = "127.0.0.1"
+host = "0.0.0.0"
 
-outro_server = ("127.0.0.2", 5678)
+outro_server = ("192.168.1.5", 5678)
 apelido_definido = "teste"
 
 # tipos de mensagem
@@ -17,34 +17,34 @@ apelido_definido = "teste"
 
 def trata_pacote_recebido(sock: socket.socket):
     while True: 
-        byte_recebido, endereco = sock.recvfrom(1)
+        bytes_recebido, endereco = sock.recvfrom(1024)
+        print(f"\n\nChegou algo do endereco {endereco}")
             
         # define o tipo de mensagem recebida
-        if byte_recebido.decode() == "1":
+        if bytes_recebido.decode()[0] == "1":
             # mensagem normal
-            recebe_mensagem_normal(sock, endereco)
+            recebe_mensagem_normal(bytes_recebido, endereco)
             pass
-        if byte_recebido.decode() == "2":
+        elif bytes_recebido.decode()[0] == "2":
             # emoji
             pass
-        if byte_recebido.decode() == "3":
+        elif bytes_recebido.decode()[0] == "3":
             # URL
             pass
-        if byte_recebido.decode() == "4":
+        elif bytes_recebido.decode()[0] == "4":
             # ECHO
             pass
 
-def recebe_mensagem_normal(sock: socket.socket, endereco: tuple):
-    byte_tam_nickname, endereco_recv = sock.recvfrom(1)
-    tam_nickname = int.from_bytes(byte_tam_nickname, "big")
+def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
     
-    nickname, endereco_recv = sock.recvfrom(tam_nickname)
-    nickname = nickname.decode()
+    tam_nickname = bytes_recebidos[1]
     
-    byte_tam_msg, endereco_recv = sock.recvfrom(1)
-    tam_msg = int.from_bytes(byte_tam_msg, "big")
-    bytes_msg, endereco_recv = sock.recvfrom(tam_msg)
-    msg_recebida = bytes_msg.decode()
+    nickname = bytes_recebidos[2:tam_nickname+2].decode()
+    
+    
+    tam_msg = bytes_recebidos[tam_nickname+2]
+    
+    msg_recebida = bytes_recebidos[tam_nickname+3:tam_nickname+3 + tam_msg].decode()
 
     print(f"[{nickname}] - {msg_recebida}")
 
