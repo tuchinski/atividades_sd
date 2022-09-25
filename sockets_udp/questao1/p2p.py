@@ -1,5 +1,6 @@
 import socket
 from threading import Thread
+from Mensagem import Mensagem
 
 # host e porta do servidor p2p
 porta = 5678
@@ -15,9 +16,13 @@ apelido_definido = "teste"
 # 4: ECHO (envia e recebe a mesma mensagem para indicar que usuário está ativo).
 
 
+
 def trata_pacote_recebido(sock: socket.socket):
     while True: 
         bytes_recebido, endereco = sock.recvfrom(1024)
+        msg_recebida = Mensagem(bytes_recebido)
+        print(msg_recebida)
+
         print(f"\n\nChegou algo do endereco {endereco}")
             
         # define o tipo de mensagem recebida
@@ -48,7 +53,8 @@ def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
 
     print(f"[{nickname}] - {msg_recebida}")
 
-
+def recebe_echo(bytes_recebidos: bytes, endereco: tuple):
+    pass
 
 def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> bytes:
     '''
