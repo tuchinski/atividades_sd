@@ -6,7 +6,7 @@ from Mensagem import Mensagem
 porta = 5678
 host = "0.0.0.0"
 
-outro_server = ("192.168.1.5", 5678)
+outro_server = ("192.168.1.15", 5678)
 apelido_definido = "teste"
 
 # tipos de mensagem
@@ -26,17 +26,17 @@ def trata_pacote_recebido(sock: socket.socket):
         print(f"\n\nChegou algo do endereco {endereco}")
             
         # define o tipo de mensagem recebida
-        if bytes_recebido.decode()[0] == "1":
+        if msg_recebida.tipo_mensagem == "1":
             # mensagem normal
             recebe_mensagem_normal(bytes_recebido, endereco)
             pass
-        elif bytes_recebido.decode()[0] == "2":
+        elif msg_recebida.tipo_mensagem == "2":
             # emoji
             pass
-        elif bytes_recebido.decode()[0] == "3":
+        elif msg_recebida.tipo_mensagem == "3":
             # URL
             pass
-        elif bytes_recebido.decode()[0] == "4":
+        elif msg_recebida.tipo_mensagem == "4":
             # ECHO
             pass
 
