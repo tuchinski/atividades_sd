@@ -15,9 +15,10 @@ apelido_definido = "teste"
 # 3: URL
 # 4: ECHO (envia e recebe a mesma mensagem para indicar que usuário está ativo).
 
+# variavel que guarda se o cliente quem fez o echo request 
+make_echo_request = False
 
-
-def trata_pacote_recebido(sock: socket.socket):
+def trata_pacote_recebido(sock: socket.socket, apelido: str):
     while True: 
         bytes_recebido, endereco = sock.recvfrom(1024)
         msg_recebida = Mensagem(bytes_recebido)
@@ -29,7 +30,6 @@ def trata_pacote_recebido(sock: socket.socket):
         if msg_recebida.tipo_mensagem == "1":
             # mensagem normal
             recebe_mensagem_normal(bytes_recebido, endereco)
-            pass
         elif msg_recebida.tipo_mensagem == "2":
             # emoji
             pass
@@ -38,6 +38,7 @@ def trata_pacote_recebido(sock: socket.socket):
             pass
         elif msg_recebida.tipo_mensagem == "4":
             # ECHO
+            recebe_echo(msg_recebida, endereco, apelido, sock)
             pass
 
 def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
@@ -53,8 +54,18 @@ def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
 
     print(f"[{nickname}] - {msg_recebida}")
 
-def recebe_echo(bytes_recebidos: bytes, endereco: tuple):
-    pass
+def recebe_echo(msg_recebida: Mensagem, endereco: tuple, apelido: str, sock: socket.socket):
+    global make_echo_request
+
+    print(f"Recebendo echo de {msg_recebida.nickname} - endereco: {endereco}")
+    
+    if make_echo_request == False:
+        print(f"enviando echo para {msg_recebida.nickname} - endereco: {endereco}")
+
+        msg_echo_retorno = Mensagem(monta_packet_mensagem("4", apelido, ""))
+        sock.sendto(msg_echo_retorno.bytes_mensagem, endereco)
+    
+    
 
 def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> bytes:
     '''
@@ -84,7 +95,8 @@ def envia_mensagem_normal(sock: socket.socket, apelido: str):
     bytes_msg  = monta_packet_mensagem("1", apelido, msg_enviar)
     sock.sendto(bytes_msg, outro_server)
     
-
+def envia_mensagem_echo(sock: socket.socket, apelido):
+    sock.sendto(monta_packet_mensagem("4", apelido, ""), outro_server)
 
 def envia_mensagens(sock: socket.socket, apelido: str):
     while True:
@@ -101,7 +113,7 @@ def envia_mensagens(sock: socket.socket, apelido: str):
             # URL
             pass
         elif tipo_msg == "4":
-            # ECHO
+            envia_mensagem_echo(sock, apelido)
             pass
         else:
             print("tipo de msg inválido")
@@ -116,7 +128,7 @@ def main():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # desocupa a porta assim que o server é finalizado
         s.bind((host, porta))
 
-        t1 = Thread(target=trata_pacote_recebido, args=(s,))
+        t1 = Thread(target=trata_pacote_recebido, args=(s,apelido_definido,))
         t2 = Thread(target=envia_mensagens, args=(s,apelido_definido, ))
 
         t1.start()

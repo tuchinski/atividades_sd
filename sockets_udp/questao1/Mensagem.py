@@ -1,6 +1,8 @@
 class Mensagem:
     def __init__(self, bytes_mensagem):
 
+        self.bytes_mensagem = bytes_mensagem
+
         self.tipo_mensagem = bytes_mensagem.decode()[0]
 
         self.tam_nickname = bytes_mensagem[1]
