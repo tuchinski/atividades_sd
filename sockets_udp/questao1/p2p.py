@@ -65,6 +65,7 @@ def recebe_echo(msg_recebida: Mensagem, endereco: tuple, apelido: str, sock: soc
         msg_echo_retorno = Mensagem(monta_packet_mensagem("4", apelido, ""))
         sock.sendto(msg_echo_retorno.bytes_mensagem, endereco)
     
+    make_echo_request = False
     
 
 def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> bytes:
@@ -96,6 +97,9 @@ def envia_mensagem_normal(sock: socket.socket, apelido: str):
     sock.sendto(bytes_msg, outro_server)
     
 def envia_mensagem_echo(sock: socket.socket, apelido):
+    global make_echo_request
+
+    make_echo_request = True
     sock.sendto(monta_packet_mensagem("4", apelido, ""), outro_server)
 
 def envia_mensagens(sock: socket.socket, apelido: str):
