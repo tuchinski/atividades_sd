@@ -7,7 +7,6 @@ porta = 5678
 host = "0.0.0.0"
 
 outro_server = ("192.168.1.15", 5678)
-apelido_definido = "teste"
 
 # tipos de mensagem
 # 1: mensagem normal
@@ -18,8 +17,18 @@ apelido_definido = "teste"
 # variavel que guarda se o cliente quem fez o echo request 
 make_echo_request = False
 
+
 def trata_pacote_recebido(sock: socket.socket, apelido: str):
-    while True: 
+    """
+
+    Args:
+        sock: Socket de conexão
+        apelido: apelido definido para o usuário
+
+    Returns:
+        None:
+    """
+    while True:
         bytes_recebido, endereco = sock.recvfrom(1024)
         msg_recebida = Mensagem(bytes_recebido)
         # print(msg_recebida)
@@ -34,25 +43,38 @@ def trata_pacote_recebido(sock: socket.socket, apelido: str):
             msg_recebida.imprime_mensagem()
             
 
-def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
-    
+def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple) -> None:
+    """
+
+    Args:
+        bytes_recebidos: bytes recebidos da mensagem
+        endereco: endereco do cliente que enviou a msg
+    """
     tam_nickname = bytes_recebidos[1]
     
     nickname = bytes_recebidos[2:tam_nickname+2].decode()
-    
-    
+
     tam_msg = bytes_recebidos[tam_nickname+2]
     
     msg_recebida = bytes_recebidos[tam_nickname+3:tam_nickname+3 + tam_msg].decode()
 
     print(f"[{nickname}] - {msg_recebida}")
 
+
 def recebe_echo(msg_recebida: Mensagem, endereco: tuple, apelido: str, sock: socket.socket):
+    """
+
+    Args:
+        msg_recebida: Mensagem recebida do tipo Mensagem
+        endereco: endereço de quem mandou o ECHO
+        apelido: apelido do usuário
+        sock: socket de conexao
+    """
     global make_echo_request
 
     print(f"Recebendo ECHO de {msg_recebida.nickname} - endereco: {endereco}")
     
-    if make_echo_request == False:
+    if not make_echo_request:
         print(f"enviando echo para {msg_recebida.nickname} - endereco: {endereco}")
 
         msg_echo_retorno = Mensagem(monta_packet_mensagem("4", apelido, ""))
@@ -62,9 +84,17 @@ def recebe_echo(msg_recebida: Mensagem, endereco: tuple, apelido: str, sock: soc
     
 
 def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> bytes:
-    '''
+    """
     Monta a mensagem a ser enviada
-    '''
+
+    Args:
+        tipo_mensagem: tipo da mensagem a ser enviada
+        apelido: apelido do cliente que está mandando
+        mensagem: mensagem a ser enviada
+
+    Returns:
+        bytes: mensagem convertida em bytes
+    """
     # adicionando tipo msg
     bytes_mensagem = tipo_mensagem.encode()
 
@@ -82,8 +112,19 @@ def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> by
 
     return bytes_mensagem
 
+
 def envia_mensagem(sock: socket.socket, apelido: str, tipo_mensagem: str):
-    tipo_msgs_aceitas = ["1","2","3","4"]
+    """
+    Envia a mensagem
+    Args:
+        sock: socket de conexao
+        apelido: apelido do cliente que está enviando
+        tipo_mensagem: tipo da mensagem a ser enviada
+
+    Returns:
+        None
+    """
+    tipo_msgs_aceitas = ["1", "2", "3", "4"]
     if tipo_mensagem not in tipo_msgs_aceitas:
         print("Tipo de mensagem inválido")
         return
@@ -94,12 +135,25 @@ def envia_mensagem(sock: socket.socket, apelido: str, tipo_mensagem: str):
 
     
 def envia_mensagem_echo(sock: socket.socket, apelido):
+    """
+    Manda o ECHO
+    Args:
+        sock: socket de conexao
+        apelido: apelido do ciente que está enviando
+    """
     global make_echo_request
 
     make_echo_request = True
     sock.sendto(monta_packet_mensagem("4", apelido, ""), outro_server)
 
+
 def envia_mensagens(sock: socket.socket, apelido: str):
+    """
+    Realiza o envio das mensagens
+    Args:
+        sock: socket de conexao
+        apelido: apelido do ciente que está enviando
+    """
     while True:
         tipo_msg = input("Digite o tipo de mensagem que quer enviar -> 1-Msg Normal 2-Emoji 3-URL 4-Echo: ")
 
@@ -123,7 +177,6 @@ def envia_mensagens(sock: socket.socket, apelido: str):
             print("tipo de msg inválido")
 
 
-
 def main():
     print("Iniciando o server p2p")
     apelido_definido = input("Digite seu apelido: ")
@@ -132,8 +185,8 @@ def main():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # desocupa a porta assim que o server é finalizado
         s.bind((host, porta))
 
-        t1 = Thread(target=trata_pacote_recebido, args=(s,apelido_definido,))
-        t2 = Thread(target=envia_mensagens, args=(s,apelido_definido, ))
+        t1 = Thread(target=trata_pacote_recebido, args=(s, apelido_definido,))
+        t2 = Thread(target=envia_mensagens, args=(s, apelido_definido, ))
 
         t1.start()
         t2.start()

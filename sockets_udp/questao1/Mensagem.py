@@ -13,7 +13,6 @@ class Mensagem:
     
         self.msg_recebida = bytes_mensagem[self.tam_nickname+3:self.tam_nickname+3 + self.tam_msg].decode()
 
-        
     def __str__(self):
         return f" tipo_mensagem = {self.tipo_mensagem}\ntam_nickname = {self.tam_nickname}\nnickname = {self.nickname}\ntam_msg = {self.tam_msg}\nmsg_recebida {self.msg_recebida}"
 
