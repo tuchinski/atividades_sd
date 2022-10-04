@@ -22,26 +22,17 @@ def trata_pacote_recebido(sock: socket.socket, apelido: str):
     while True: 
         bytes_recebido, endereco = sock.recvfrom(1024)
         msg_recebida = Mensagem(bytes_recebido)
-        print(msg_recebida)
+        # print(msg_recebida)
 
         print(f"\n\nChegou algo do endereco {endereco}")
 
-        msg_recebida.imprime_mensagem()
-            
-        # define o tipo de mensagem recebida
-        # if msg_recebida.tipo_mensagem == "1":
-        #     # mensagem normal
-        #     # recebe_mensagem_normal(bytes_recebido, endereco)
-        # elif msg_recebida.tipo_mensagem == "2":
-        #     # emoji
-        #     pass
-        # elif msg_recebida.tipo_mensagem == "3":
-        #     # URL
-            # pass
         if msg_recebida.tipo_mensagem == "4":
             # ECHO
             recebe_echo(msg_recebida, endereco, apelido, sock)
             pass
+        else:
+            msg_recebida.imprime_mensagem()
+            
 
 def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
     
@@ -96,17 +87,11 @@ def envia_mensagem(sock: socket.socket, apelido: str, tipo_mensagem: str):
     if tipo_mensagem not in tipo_msgs_aceitas:
         print("Tipo de mensagem inválido")
         return
-    msg_enviar = input("Digite a msg que deseja enviar: ")
+    msg_enviar = input("Digite a msg que deseja enviar:")
 
     bytes_msg  = monta_packet_mensagem(tipo_mensagem, apelido, msg_enviar)
     sock.sendto(bytes_msg, outro_server)
 
-# def envia_mensagem_normal(sock: socket.socket, apelido: str):
-#     envia_mensagem(sock ,apelido, "1")
-#     msg_enviar = input("Digite a msg que deseja enviar: ")
-
-#     bytes_msg  = monta_packet_mensagem("1", apelido, msg_enviar)
-#     sock.sendto(bytes_msg, outro_server)
     
 def envia_mensagem_echo(sock: socket.socket, apelido):
     global make_echo_request
@@ -116,7 +101,7 @@ def envia_mensagem_echo(sock: socket.socket, apelido):
 
 def envia_mensagens(sock: socket.socket, apelido: str):
     while True:
-        tipo_msg = input("Digite o tipo de mensagem que quer enviar: ")
+        tipo_msg = input("Digite o tipo de mensagem que quer enviar -> 1-Msg Normal 2-Emoji 3-URL 4-Echo: ")
 
         if tipo_msg == "1":
             # mensagem normal
