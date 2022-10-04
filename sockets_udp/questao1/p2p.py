@@ -25,18 +25,20 @@ def trata_pacote_recebido(sock: socket.socket, apelido: str):
         print(msg_recebida)
 
         print(f"\n\nChegou algo do endereco {endereco}")
+
+        msg_recebida.imprime_mensagem()
             
         # define o tipo de mensagem recebida
-        if msg_recebida.tipo_mensagem == "1":
-            # mensagem normal
-            recebe_mensagem_normal(bytes_recebido, endereco)
-        elif msg_recebida.tipo_mensagem == "2":
-            # emoji
-            pass
-        elif msg_recebida.tipo_mensagem == "3":
-            # URL
-            pass
-        elif msg_recebida.tipo_mensagem == "4":
+        # if msg_recebida.tipo_mensagem == "1":
+        #     # mensagem normal
+        #     # recebe_mensagem_normal(bytes_recebido, endereco)
+        # elif msg_recebida.tipo_mensagem == "2":
+        #     # emoji
+        #     pass
+        # elif msg_recebida.tipo_mensagem == "3":
+        #     # URL
+            # pass
+        if msg_recebida.tipo_mensagem == "4":
             # ECHO
             recebe_echo(msg_recebida, endereco, apelido, sock)
             pass
@@ -57,7 +59,7 @@ def recebe_mensagem_normal(bytes_recebidos: bytes, endereco: tuple):
 def recebe_echo(msg_recebida: Mensagem, endereco: tuple, apelido: str, sock: socket.socket):
     global make_echo_request
 
-    print(f"Recebendo echo de {msg_recebida.nickname} - endereco: {endereco}")
+    print(f"Recebendo ECHO de {msg_recebida.nickname} - endereco: {endereco}")
     
     if make_echo_request == False:
         print(f"enviando echo para {msg_recebida.nickname} - endereco: {endereco}")
@@ -89,12 +91,22 @@ def monta_packet_mensagem(tipo_mensagem: str, apelido: str, mensagem: str) -> by
 
     return bytes_mensagem
 
-
-def envia_mensagem_normal(sock: socket.socket, apelido: str):
+def envia_mensagem(sock: socket.socket, apelido: str, tipo_mensagem: str):
+    tipo_msgs_aceitas = ["1","2","3","4"]
+    if tipo_mensagem not in tipo_msgs_aceitas:
+        print("Tipo de mensagem inválido")
+        return
     msg_enviar = input("Digite a msg que deseja enviar: ")
 
-    bytes_msg  = monta_packet_mensagem("1", apelido, msg_enviar)
+    bytes_msg  = monta_packet_mensagem(tipo_mensagem, apelido, msg_enviar)
     sock.sendto(bytes_msg, outro_server)
+
+# def envia_mensagem_normal(sock: socket.socket, apelido: str):
+#     envia_mensagem(sock ,apelido, "1")
+#     msg_enviar = input("Digite a msg que deseja enviar: ")
+
+#     bytes_msg  = monta_packet_mensagem("1", apelido, msg_enviar)
+#     sock.sendto(bytes_msg, outro_server)
     
 def envia_mensagem_echo(sock: socket.socket, apelido):
     global make_echo_request
@@ -108,12 +120,15 @@ def envia_mensagens(sock: socket.socket, apelido: str):
 
         if tipo_msg == "1":
             # mensagem normal
-            envia_mensagem_normal(sock, apelido)
+            envia_mensagem(sock, apelido, "1")
+            # envia_mensagem_normal(sock, apelido)
             pass
         elif tipo_msg == "2":
             # emoji
+            envia_mensagem(sock, apelido, "2")
             pass
         elif tipo_msg == "3":
+            envia_mensagem(sock, apelido, "3")
             # URL
             pass
         elif tipo_msg == "4":

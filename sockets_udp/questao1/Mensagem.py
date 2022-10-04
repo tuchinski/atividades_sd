@@ -16,3 +16,15 @@ class Mensagem:
         
     def __str__(self):
         return f" tipo_mensagem = {self.tipo_mensagem}\ntam_nickname = {self.tam_nickname}\nnickname = {self.nickname}\ntam_msg = {self.tam_msg}\nmsg_recebida {self.msg_recebida}"
+
+    def imprime_mensagem(self):
+        nome_tipo_mensagem = ""
+        if self.tipo_mensagem == "1":
+            nome_tipo_mensagem = "NORMAL"
+        elif self.tipo_mensagem == "2":
+            nome_tipo_mensagem = "EMOJI"
+        elif self.tipo_mensagem == "3":
+            nome_tipo_mensagem = "URL"
+        elif self.tipo_mensagem == "4":
+            nome_tipo_mensagem = "ECHO"
+        print(f"Mensagem {nome_tipo_mensagem} de {self.nickname} - {self.msg_recebida}")
