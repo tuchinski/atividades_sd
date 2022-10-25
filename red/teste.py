@@ -1,0 +1,88 @@
+# • Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
+# • Alteração notas na tabela Matricula.
+# • Alteração faltas na tabela Matricula.
+# FEITO! • Listagem de alunos (RA, nome, período) de uma disciplina informado a disciplina, ano e semestre. 
+# FEITO! • Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
+
+import socket
+import pythoncode.notas_pb2 as proto
+import sqlite3
+
+conexao_bd = "database_com_dados-contrib-Daniel-Farina.db"
+
+GET_ALL_CURSOS = "SELECT * FROM curso"
+
+def main():
+    conn = sqlite3.connect(conexao_bd)
+    cursor = conn.cursor()
+    cursos = cursor.execute(GET_ALL_CURSOS)
+
+    lista_cursos = proto.ListaCursos()
+
+    # print(cursos.fetchall())
+
+    for curso in cursos.fetchall():
+        curso_proto = lista_cursos.cursos.add()
+        curso_proto.codigo = curso[0]
+        curso_proto.nome = curso[1]
+        # print(curso)
+
+    # print(lista_cursos)
+
+    # for t in lista_cursos.cursos:
+    #     print(t.codigo)
+
+    # coisa_teste = proto.Curso()
+    # coisa_teste.codigo = 1
+    # coisa_teste.nome = "teste"
+
+    # msg = coisa_teste.SerializeToString()
+
+    # teste = coisa_teste = proto.Curso()
+
+    # teste.ParseFromString(msg)
+    # print("---------------------")
+    # print(teste)
+
+
+    # busca_alunos_por_disciplina("GA3X1", 2018, 6, conn)
+    # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
+
+
+
+def busca_alunos_por_disciplina(cod_disciplina: str, ano:int, semestre: int, conn:sqlite3.Connection) -> proto.ListaAlunos:
+    # cod_disciplina = "GA3X1"
+    # ano = 2018
+    # semestre = 6
+    SELECT_BUSCA_ALUNOS_DISCIPLINA = "select a.* from Aluno A, disciplina d, Matricula m where d.codigo = m.cod_disciplina AND m.ra = a.ra and d.codigo = ? and ano = ? and semestre = ?"
+
+    cursor = conn.cursor()
+    result = cursor.execute(SELECT_BUSCA_ALUNOS_DISCIPLINA, (cod_disciplina, ano, semestre))
+    lista_alunos_disciplina = proto.ListaAlunos()
+    for aluno in result.fetchall():
+        aluno_curso = lista_alunos_disciplina.alunos.add()
+        aluno_curso.RA = aluno[0]
+        aluno_curso.nome = aluno[1]
+        aluno_curso.periodo = aluno[2]
+        aluno_curso.cod_curso = aluno[3]
+    return lista_alunos_disciplina
+
+def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn: sqlite3.Connection):
+    SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE = 'select a.ra, d.nome, m.nota, m.faltas from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_disciplina and a.ra = m.ra and a.ra = ? and m.ano = ? and m.semestre = ?'
+    cursor = conn.cursor()
+    result = cursor.execute(SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE,(ra, ano, semestre))
+    lista_disciplinas = proto.ListaMatriculas()
+    for resultado in result:
+        retorno_matricula = lista_disciplinas.matriculas.add()
+        retorno_matricula.ra = resultado[0]
+        retorno_matricula.nome_disciplina = resultado[1]
+        retorno_matricula.nota = resultado[2]
+        retorno_matricula.faltas = resultado[3]
+    return lista_disciplinas
+
+def alterar_faltas_matricula(ra: int, cod_disciplina: int, faltas: int):
+    pass
+    
+
+if __name__ == "__main__":
+    main()

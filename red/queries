@@ -1,0 +1,15 @@
+• Listagem de alunos (RA, nome, período) de uma disciplina informado a disciplina, ano e semestre.
+
+select a.* from Aluno A, disciplina d, Matricula m where d.codigo = m.cod_disciplina AND m.ra = a.ra and d.codigo = ? and ano = ? and semestre = ?
+
+
+Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
+
+select *
+from Aluno a, Disciplina d, Matricula m
+where a.ra = ? and 
+m.ano = ? and 
+m.semestre = ?
+and d.codigo = m.cod_disciplina
+
+select * from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_disciplina and a.ra = m.ra and a.ra = ? and m.ano = ? and m.semestre = ?
