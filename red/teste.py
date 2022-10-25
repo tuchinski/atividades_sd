@@ -1,5 +1,5 @@
-# • Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
-# • Alteração notas na tabela Matricula.
+# FEITO! • Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
+# FEITO! • Alteração notas na tabela Matricula.
 # FEITO! • Alteração faltas na tabela Matricula.
 # FEITO! • Listagem de alunos (RA, nome, período) de uma disciplina informado a disciplina, ano e semestre. 
 # FEITO! • Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
@@ -48,7 +48,8 @@ def main():
     # busca_alunos_por_disciplina("GA3X1", 2018, 6, conn)
     # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
     # alterar_faltas_matricula(23, "BCC36B", 5, conn)
-    alterar_nota_matricula(23, "BCC36B", 5.2, conn)
+    # alterar_nota_matricula(23, "BCC36B", 5.2, conn)
+    # inserir_matricula(49, 'LM31A', 2022, 1, conn)
 
 
 
@@ -105,6 +106,18 @@ def alterar_nota_matricula(ra: int, cod_disciplina: str, nota: int, conn: sqlite
 
     cursor = conn.cursor()
     result = cursor.execute(UPDATE_NOTA_DISCIPLINA, (nota, ra, cod_disciplina))
+    if result.rowcount != 1:
+        conn.rollback()
+        return False
+    else: 
+        conn.commit()
+        return True
+
+def inserir_matricula(ra: int, cod_disciplina: str, ano: int, semestre: int, conn: sqlite3.Connection):
+    # -- RA, cod_disciplina, ano, semestre, nota, faltas
+    INSERT_MATRICULA =  'insert into Matricula values(?,?,?,?,?,?)'
+    cursor = conn.cursor()
+    result = cursor.execute(INSERT_MATRICULA, (ra, cod_disciplina, ano, semestre, 0, 0))
     if result.rowcount != 1:
         conn.rollback()
         return False

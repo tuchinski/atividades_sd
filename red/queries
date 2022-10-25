@@ -20,4 +20,4 @@ select * from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_discipli
 update Matricula set faltas = ? where ra = ? and cod_disciplina = ?
 
 -- RA, cod_disciplina, ano, semestre, nota, faltas
-insert into Matricula values(?,?,?,?,?,?)
+insert into Matricula values(49,'LM31A',2022,1,0,0)
