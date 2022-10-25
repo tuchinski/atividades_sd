@@ -13,3 +13,11 @@ m.semestre = ?
 and d.codigo = m.cod_disciplina
 
 select * from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_disciplina and a.ra = m.ra and a.ra = ? and m.ano = ? and m.semestre = ?
+
+
+-- atualizar as faltas dado o RA e cod_disciplina
+
+update Matricula set faltas = ? where ra = ? and cod_disciplina = ?
+
+-- RA, cod_disciplina, ano, semestre, nota, faltas
+insert into Matricula values(?,?,?,?,?,?)

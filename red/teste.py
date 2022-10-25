@@ -1,6 +1,6 @@
 # • Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
 # • Alteração notas na tabela Matricula.
-# • Alteração faltas na tabela Matricula.
+# FEITO! • Alteração faltas na tabela Matricula.
 # FEITO! • Listagem de alunos (RA, nome, período) de uma disciplina informado a disciplina, ano e semestre. 
 # FEITO! • Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
 
@@ -47,6 +47,8 @@ def main():
 
     # busca_alunos_por_disciplina("GA3X1", 2018, 6, conn)
     # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
+    # alterar_faltas_matricula(23, "BCC36B", 5, conn)
+    alterar_nota_matricula(23, "BCC36B", 5.2, conn)
 
 
 
@@ -80,9 +82,35 @@ def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn:
         retorno_matricula.faltas = resultado[3]
     return lista_disciplinas
 
-def alterar_faltas_matricula(ra: int, cod_disciplina: int, faltas: int):
-    pass
+def alterar_faltas_matricula(ra: int, cod_disciplina: str, faltas: int, conn: sqlite3.Connection): 
+    '''
+    Retorna um bool dizendo se conseguiu ou não atualizar o registro
+    '''
+    UPDATE_FALTAS_DISCIPLINA = 'update Matricula set faltas = ? where ra = ? and cod_disciplina = ?'
+
+    cursor = conn.cursor()
+    result = cursor.execute(UPDATE_FALTAS_DISCIPLINA, (faltas, ra, cod_disciplina))
+    if result.rowcount != 1:
+        conn.rollback()
+        return False
+    else: 
+        conn.commit()
+        return True
     
+def alterar_nota_matricula(ra: int, cod_disciplina: str, nota: int, conn: sqlite3.Connection): 
+    '''
+    Retorna um bool dizendo se conseguiu ou não atualizar o registro
+    '''
+    UPDATE_NOTA_DISCIPLINA = 'update Matricula set nota = ? where ra = ? and cod_disciplina = ?'
+
+    cursor = conn.cursor()
+    result = cursor.execute(UPDATE_NOTA_DISCIPLINA, (nota, ra, cod_disciplina))
+    if result.rowcount != 1:
+        conn.rollback()
+        return False
+    else: 
+        conn.commit()
+        return True
 
 if __name__ == "__main__":
     main()
