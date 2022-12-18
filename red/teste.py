@@ -50,8 +50,8 @@ def main():
     # print(busca_alunos_por_disciplina("GA3X11", 2018, 6, conn))
     # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
     # print(alterar_faltas_matricula(23, "BCC36B", 2019, 7, 5, conn))
-    print(alterar_nota_matricula(23, "BCC36B", 2019, 7, 1.2, conn))
-    # inserir_matricula(49, 'LM31A', 2022, 1, conn)
+    # print(alterar_nota_matricula(23, "BCC36B", 2019, 7, 1.2, conn))
+    print(inserir_matricula(49, 'LM31A', "2022", 2, conn))
 
 def valida_codigo_disciplina(cod_disciplina: str, conn: sqlite3.Connection):
     """
@@ -168,14 +168,27 @@ def alterar_nota_matricula(ra: int, cod_disciplina: str, ano: str, semestre:str,
 def inserir_matricula(ra: int, cod_disciplina: str, ano: int, semestre: int, conn: sqlite3.Connection):
     # -- RA, cod_disciplina, ano, semestre, nota, faltas
     INSERT_MATRICULA =  'insert into Matricula values(?,?,?,?,?,?)'
+    retorno = proto.RetornoDefault()
+
+    if not valida_codigo_disciplina(cod_disciplina, conn):
+        retorno.mensagem = "Codigo da disciplina invalido"
+        return retorno
+
     cursor = conn.cursor()
-    result = cursor.execute(INSERT_MATRICULA, (ra, cod_disciplina, ano, semestre, 0, 0))
-    if result.rowcount != 1:
-        conn.rollback()
-        return False
-    else: 
-        conn.commit()
-        return True
+    try:
+        result = cursor.execute(INSERT_MATRICULA, (ra, cod_disciplina, ano, semestre, 0, 0))
+        if result.rowcount != 1:
+            conn.rollback()
+            retorno.mensagem = "erro ao inserir matricula, validar dados de entrada"
+        else: 
+            conn.commit()
+            retorno.mensagem = "Sucesso ao cadastrar matricula"
+            retorno.sucesso = True
+
+    except Exception as e:
+        print(e)
+        retorno.mensagem = "Erro ao inserir matricula"
+    return retorno
 
 if __name__ == "__main__":
     main()
