@@ -49,8 +49,10 @@ message ListaAlunos{
     repeated Aluno alunos = 1;
 }
 
-message ListaMatriculas{
+message ReturnListaMatriculas{
     repeated RetornoMatricula matriculas = 1;
+    bool sucesso = 2;
+    string mensagem = 3;
 }
 
 message RetornoMatricula {

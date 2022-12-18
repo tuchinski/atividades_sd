@@ -47,8 +47,8 @@ def main():
     # print(valida_codigo_disciplina("GA3X1", conn))
 
 
-    print(busca_alunos_por_disciplina("GA3X11", 2018, 6, conn))
-    # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
+    # print(busca_alunos_por_disciplina("GA3X11", 2018, 6, conn))
+    print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
     # alterar_faltas_matricula(23, "BCC36B", 5, conn)
     # alterar_nota_matricula(23, "BCC36B", 5.2, conn)
     # inserir_matricula(49, 'LM31A', 2022, 1, conn)
@@ -105,13 +105,15 @@ def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn:
     SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE = 'select a.ra, d.nome, m.nota, m.faltas from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_disciplina and a.ra = m.ra and a.ra = ? and m.ano = ? and m.semestre = ?'
     cursor = conn.cursor()
     result = cursor.execute(SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE,(ra, ano, semestre))
-    lista_disciplinas = proto.ListaMatriculas()
+    lista_disciplinas = proto.ReturnListaMatriculas()
     for resultado in result:
         retorno_matricula = lista_disciplinas.matriculas.add()
         retorno_matricula.ra = resultado[0]
         retorno_matricula.nome_disciplina = resultado[1]
         retorno_matricula.nota = resultado[2]
         retorno_matricula.faltas = resultado[3]
+    lista_disciplinas.sucesso = True
+    lista_disciplinas.mensagem = "Sucesso ao buscar disciplinas do aluno"
     return lista_disciplinas
 
 # Alteração faltas na tabela Matricula.
