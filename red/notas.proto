@@ -64,3 +64,9 @@ message RetornoMatricula {
 message ListaCursos{
     repeated Curso cursos = 1;
 }
+
+message ReturnListaAlunos{
+    bool sucesso = 1;
+    string mensagem = 2;
+    ListaAlunos listaAlunos = 3;
+}

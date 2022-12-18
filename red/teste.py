@@ -44,32 +44,60 @@ def main():
     # print("---------------------")
     # print(teste)
 
+    # print(valida_codigo_disciplina("GA3X1", conn))
 
-    # busca_alunos_por_disciplina("GA3X1", 2018, 6, conn)
+
+    print(busca_alunos_por_disciplina("GA3X11", 2018, 6, conn))
     # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
     # alterar_faltas_matricula(23, "BCC36B", 5, conn)
     # alterar_nota_matricula(23, "BCC36B", 5.2, conn)
     # inserir_matricula(49, 'LM31A', 2022, 1, conn)
 
+def valida_codigo_disciplina(cod_disciplina: str, conn: sqlite3.Connection):
+    """
+    Valida se o código de uma disciplina existe
+    """
+    SELECT_VALIDA_DISCIPLINA = "select 1 from Disciplina where codigo = ?"
+    
+    cursor = conn.cursor()
+    result = cursor.execute(SELECT_VALIDA_DISCIPLINA, (cod_disciplina,))
+    if result.fetchall():
+        return True
+    else: 
+        return False
 
 
+# Listagem de alunos (RA, nome, período) de uma disciplina informado a disciplina, ano e semestre. 
 def busca_alunos_por_disciplina(cod_disciplina: str, ano:int, semestre: int, conn:sqlite3.Connection) -> proto.ListaAlunos:
-    # cod_disciplina = "GA3X1"
-    # ano = 2018
-    # semestre = 6
+    """
+    Busca os alunos de acordo com o cod_disciplina, ano e semestre desejado
+    
+    Caso encontre ou não, utiliza a message ReturnListaAlunos
+    """
     SELECT_BUSCA_ALUNOS_DISCIPLINA = "select a.* from Aluno A, disciplina d, Matricula m where d.codigo = m.cod_disciplina AND m.ra = a.ra and d.codigo = ? and ano = ? and semestre = ?"
+    retorno = proto.ReturnListaAlunos()
 
+    # verifica se o código informado existe
+    # se não existir, retorna isso com uma msg padrão
+    if not valida_codigo_disciplina(cod_disciplina, conn):
+        retorno.sucesso = False
+        retorno.mensagem = "Codigo da disciplina invalido"
+        return retorno
+
+    # busca as disciplinas, e insere no response correspondente 
     cursor = conn.cursor()
     result = cursor.execute(SELECT_BUSCA_ALUNOS_DISCIPLINA, (cod_disciplina, ano, semestre))
-    lista_alunos_disciplina = proto.ListaAlunos()
     for aluno in result.fetchall():
-        aluno_curso = lista_alunos_disciplina.alunos.add()
+        aluno_curso = retorno.listaAlunos.alunos.add()
         aluno_curso.RA = aluno[0]
         aluno_curso.nome = aluno[1]
         aluno_curso.periodo = aluno[2]
         aluno_curso.cod_curso = aluno[3]
-    return lista_alunos_disciplina
+    retorno.sucesso = True
+    retorno.mensagem = "Sucesso ao buscar os alunos"
+    return retorno
 
+# Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
 def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn: sqlite3.Connection):
     ''''
     Lista as disciplinas de um aluno informando seu RA, ano e semestre desejado
@@ -86,6 +114,7 @@ def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn:
         retorno_matricula.faltas = resultado[3]
     return lista_disciplinas
 
+# Alteração faltas na tabela Matricula.
 def alterar_faltas_matricula(ra: int, cod_disciplina: str, faltas: int, conn: sqlite3.Connection): 
     '''
     Retorna um bool dizendo se conseguiu ou não atualizar o registro
@@ -101,6 +130,7 @@ def alterar_faltas_matricula(ra: int, cod_disciplina: str, faltas: int, conn: sq
         conn.commit()
         return True
     
+# Alteração notas na tabela Matricula.
 def alterar_nota_matricula(ra: int, cod_disciplina: str, nota: int, conn: sqlite3.Connection): 
     '''
     Retorna um bool dizendo se conseguiu ou não atualizar o registro
@@ -116,6 +146,7 @@ def alterar_nota_matricula(ra: int, cod_disciplina: str, nota: int, conn: sqlite
         conn.commit()
         return True
 
+# Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
 def inserir_matricula(ra: int, cod_disciplina: str, ano: int, semestre: int, conn: sqlite3.Connection):
     # -- RA, cod_disciplina, ano, semestre, nota, faltas
     INSERT_MATRICULA =  'insert into Matricula values(?,?,?,?,?,?)'
