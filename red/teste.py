@@ -71,6 +71,9 @@ def busca_alunos_por_disciplina(cod_disciplina: str, ano:int, semestre: int, con
     return lista_alunos_disciplina
 
 def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn: sqlite3.Connection):
+    ''''
+    Lista as disciplinas de um aluno informando seu RA, ano e semestre desejado
+    '''
     SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE = 'select a.ra, d.nome, m.nota, m.faltas from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_disciplina and a.ra = m.ra and a.ra = ? and m.ano = ? and m.semestre = ?'
     cursor = conn.cursor()
     result = cursor.execute(SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE,(ra, ano, semestre))

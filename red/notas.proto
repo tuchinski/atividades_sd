@@ -1,5 +1,22 @@
 syntax = "proto3";
 
+message RequestMatricula{
+    // 1 -> Inserir Matricula
+    // 2 -> Alterar nota
+    // 3 -> Alterar falta
+    int32 tipoRequest = 1;
+    Matricula matricula = 2;
+}
+
+message RequestLista{
+    // 1 -> Lista Alunos
+    // 2 -> Lista disciplina, notas e faltas de um aluno
+    int32 tipoRequest = 1;
+    int32 ano = 2;
+    int32 semestre = 3;
+    int32 ra = 4;
+}
+
 message Curso{
     int32 codigo = 1;
     string nome = 2;
