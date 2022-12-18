@@ -12,12 +12,12 @@ conexao_bd = "database_com_dados-contrib-Daniel-Farina.db"
 
 GET_ALL_CURSOS = "SELECT * FROM curso"
 
-def main():
-    conn = sqlite3.connect(conexao_bd)
-    cursor = conn.cursor()
-    cursos = cursor.execute(GET_ALL_CURSOS)
+def mainTeste():
+    # conn = sqlite3.connect(conexao_bd)
+    # cursor = conn.cursor()
+    # cursos = cursor.execute(GET_ALL_CURSOS)
 
-    lista_cursos = proto.ListaCursos()
+    # lista_cursos = proto.ListaCursos()
 
     # print(cursos.fetchall())
 
@@ -60,6 +60,7 @@ def main():
     req.rm.matricula.semestre = 3
 
     a = req.SerializeToString()
+    print(a)
 
     req2 = proto.Request()
     req2.rl.tipoRequest = 1
@@ -68,6 +69,7 @@ def main():
     req2.rl.ra = 12
     
     a2 = req2.SerializeToString()
+    print(a2)
 
     # print(req)
 
@@ -76,6 +78,76 @@ def main():
     print(teste.ParseFromString(a2))
     print(teste)
     print(teste.HasField("rm"))
+
+
+def processa_request(request: bytes, db_conn: sqlite3.Connection):
+    req_proto = proto.Request()
+    req_proto.ParseFromString(request)
+
+    if req_proto.HasField("rm"):
+        tipo_request = req_proto.rm.tipoRequest
+        ra = req_proto.rm.matricula.RA
+        cod_disciplina = req_proto.rm.matricula.cod_disciplina
+        ano = req_proto.rm.matricula.ano
+        semestre = req_proto.rm.matricula.semestre
+        nota = req_proto.rm.matricula.nota
+        faltas = req_proto.rm.matricula.faltas
+
+        if tipo_request == 1:
+            # Inserindo matricula
+            return inserir_matricula(ra, cod_disciplina, ano, semestre, db_conn).SerializeToString()
+
+        elif tipo_request == 2:
+            # Alterando nota
+            return alterar_nota_matricula(ra, cod_disciplina, ano, semestre, nota, db_conn).SerializeToString()
+
+        elif tipo_request == 3:
+            # Alterando falta
+            return alterar_faltas_matricula(ra, cod_disciplina, ano, semestre, faltas, db_conn).SerializeToString()
+
+        else:
+            pass
+    elif req_proto.HasField("rl"):
+        tipo_request = req_proto.rl.tipoRequest
+        ano = req_proto.rl.ano
+        semestre = req_proto.rl.semestre
+        ra = req_proto.rl.ra
+        cod_disciplina = req_proto.rl.cod_disciplina
+        if tipo_request == 1:
+            # lista alunos
+            return busca_alunos_por_disciplina(cod_disciplina, ano, semestre, db_conn)
+        elif tipo_request == 2:
+            # Lista disciplina, notas e faltas do aluno
+            return lista_disciplinas_aluno_por_semestre(ra, ano, semestre, db_conn)
+        else:
+            pass
+
+def main():
+
+    HOST = "127.0.0.1"  
+    PORT = 8080
+
+    print("Iniciando server")
+    db_conn = sqlite3.connect(conexao_bd)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST,PORT))
+        s.listen()
+        conn,addr = s.accept()
+        with conn:
+            print(f"Conexao de {addr}")
+            while True:
+                data = conn.recv(1024)
+                print(type(conn))
+                teste = proto.Request()
+                teste.ParseFromString(data)
+                print("a", teste.rl.ano)
+
+                if not data:
+                    break
+                retorno = processa_request(data, db_conn)
+                conn.sendall(retorno)
+                # print(data)
+                # conn.sendall(data)
 
 def valida_codigo_disciplina(cod_disciplina: str, conn: sqlite3.Connection):
     """
@@ -143,7 +215,7 @@ def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn:
 # Alteração faltas na tabela Matricula.
 def alterar_faltas_matricula(ra: int, cod_disciplina: str, ano: str, semestre:str, faltas: int, conn: sqlite3.Connection): 
     '''
-    Retorna um bool dizendo se conseguiu ou não atualizar o registro
+    Altera as faltas da matricula especificada
     '''
     UPDATE_FALTAS_DISCIPLINA = 'update Matricula set faltas = ? where ra = ? and cod_disciplina = ? and ano = ? and semestre = ?'
     retorno = proto.RetornoDefault()
@@ -189,7 +261,7 @@ def alterar_nota_matricula(ra: int, cod_disciplina: str, ano: str, semestre:str,
     return retorno
 
 # Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
-def inserir_matricula(ra: int, cod_disciplina: str, ano: int, semestre: int, conn: sqlite3.Connection):
+def inserir_matricula(ra: int, cod_disciplina: str, ano: int, semestre: int, conn: sqlite3.Connection) -> proto.RetornoDefault:
     # -- RA, cod_disciplina, ano, semestre, nota, faltas
     INSERT_MATRICULA =  'insert into Matricula values(?,?,?,?,?,?)'
     retorno = proto.RetornoDefault()

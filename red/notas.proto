@@ -22,6 +22,7 @@ message RequestLista{
     int32 ano = 2;
     int32 semestre = 3;
     int32 ra = 4;
+    int32 cod_disciplina = 5;
 }
 
 message Curso{
