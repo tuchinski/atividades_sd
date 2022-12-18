@@ -48,8 +48,8 @@ def main():
 
 
     # print(busca_alunos_por_disciplina("GA3X11", 2018, 6, conn))
-    print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
-    # alterar_faltas_matricula(23, "BCC36B", 5, conn)
+    # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
+    print(alterar_faltas_matricula(23, "BCC36B", 2019, 7, 5, conn))
     # alterar_nota_matricula(23, "BCC36B", 5.2, conn)
     # inserir_matricula(49, 'LM31A', 2022, 1, conn)
 
@@ -117,20 +117,28 @@ def lista_disciplinas_aluno_por_semestre(ra: int, ano: int, semestre: int, conn:
     return lista_disciplinas
 
 # Alteração faltas na tabela Matricula.
-def alterar_faltas_matricula(ra: int, cod_disciplina: str, faltas: int, conn: sqlite3.Connection): 
+def alterar_faltas_matricula(ra: int, cod_disciplina: str, ano: str, semestre:str, faltas: int, conn: sqlite3.Connection): 
     '''
     Retorna um bool dizendo se conseguiu ou não atualizar o registro
     '''
-    UPDATE_FALTAS_DISCIPLINA = 'update Matricula set faltas = ? where ra = ? and cod_disciplina = ?'
+    UPDATE_FALTAS_DISCIPLINA = 'update Matricula set faltas = ? where ra = ? and cod_disciplina = ? and ano = ? and semestre = ?'
+    retorno = proto.RetornoDefault()
+
+    if not valida_codigo_disciplina(cod_disciplina, conn):
+        retorno.mensagem = "Codigo da disciplina invalido"
+        return retorno
+
 
     cursor = conn.cursor()
-    result = cursor.execute(UPDATE_FALTAS_DISCIPLINA, (faltas, ra, cod_disciplina))
+    result = cursor.execute(UPDATE_FALTAS_DISCIPLINA, (faltas, ra, cod_disciplina, ano, semestre))
     if result.rowcount != 1:
         conn.rollback()
-        return False
+        retorno.mensagem = "não foi possível atualizar as faltas, validar os dados informados"
     else: 
         conn.commit()
-        return True
+        retorno.mensagem = "Faltas atualizadas com sucesso"
+        retorno.sucesso = True
+    return retorno
     
 # Alteração notas na tabela Matricula.
 def alterar_nota_matricula(ra: int, cod_disciplina: str, nota: int, conn: sqlite3.Connection): 

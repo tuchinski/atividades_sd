@@ -62,6 +62,11 @@ message RetornoMatricula {
     int32 faltas = 4;
 }
 
+message RetornoDefault {
+    bool sucesso = 1;
+    string mensagem = 2;
+}
+
 
 message ListaCursos{
     repeated Curso cursos = 1;
