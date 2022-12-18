@@ -21,10 +21,10 @@ def main():
 
     # print(cursos.fetchall())
 
-    for curso in cursos.fetchall():
-        curso_proto = lista_cursos.cursos.add()
-        curso_proto.codigo = curso[0]
-        curso_proto.nome = curso[1]
+    # for curso in cursos.fetchall():
+    #     curso_proto = lista_cursos.cursos.add()
+    #     curso_proto.codigo = curso[0]
+    #     curso_proto.nome = curso[1]
         # print(curso)
 
     # print(lista_cursos)
@@ -44,14 +44,38 @@ def main():
     # print("---------------------")
     # print(teste)
 
-    # print(valida_codigo_disciplina("GA3X1", conn))
-
 
     # print(busca_alunos_por_disciplina("GA3X11", 2018, 6, conn))
     # print(lista_disciplinas_aluno_por_semestre(18, 2019, 3, conn))
     # print(alterar_faltas_matricula(23, "BCC36B", 2019, 7, 5, conn))
     # print(alterar_nota_matricula(23, "BCC36B", 2019, 7, 1.2, conn))
-    print(inserir_matricula(49, 'LM31A', "2022", 2, conn))
+    # print(inserir_matricula(49, 'LM31A', "2022", 2, conn))
+
+    req = proto.Request()
+    # req.rm = proto.RequestMatricula()
+    req.rm.tipoRequest = 1
+    req.rm.matricula.RA = 49
+    req.rm.matricula.cod_disciplina = 'LM31A'
+    req.rm.matricula.ano = 2022
+    req.rm.matricula.semestre = 3
+
+    a = req.SerializeToString()
+
+    req2 = proto.Request()
+    req2.rl.tipoRequest = 1
+    req2.rl.ano = 2019
+    req2.rl.semestre = 2
+    req2.rl.ra = 12
+    
+    a2 = req2.SerializeToString()
+
+    # print(req)
+
+    teste = proto.Request()
+    print("-----------------")
+    print(teste.ParseFromString(a2))
+    print(teste)
+    print(teste.HasField("rm"))
 
 def valida_codigo_disciplina(cod_disciplina: str, conn: sqlite3.Connection):
     """

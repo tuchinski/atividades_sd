@@ -1,5 +1,12 @@
 syntax = "proto3";
 
+message Request{
+    oneof req {
+        RequestMatricula rm = 1;
+        RequestLista rl = 2;
+    }
+}
+
 message RequestMatricula{
     // 1 -> Inserir Matricula
     // 2 -> Alterar nota
