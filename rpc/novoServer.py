@@ -103,14 +103,15 @@ class GerenciadorNotas(notas_rpc.GerenciadorNotas):
         return retorno
 
     def listaAlunosDisciplina(self, request, context):
-        conexao_bd = "rpc.db"
-        conn = sqlite3.connect(conexao_bd)
-
+        
         """
         Busca os alunos de acordo com o cod_disciplina, ano e semestre desejado
         
         Caso encontre ou não, utiliza a message ReturnListaAlunos
         """
+        conexao_bd = "rpc.db"
+        conn = sqlite3.connect(conexao_bd)
+
         SELECT_BUSCA_ALUNOS_DISCIPLINA = "select a.* from Aluno A, disciplina d, Matricula m where d.codigo = m.cod_disciplina AND m.ra = a.ra and d.codigo = ? and ano = ? and semestre = ?"
         retorno = proto.ReturnListaAlunos()
 
@@ -136,10 +137,25 @@ class GerenciadorNotas(notas_rpc.GerenciadorNotas):
         
 
     def listaDisciplinaAluno(self, request, context):
-        retorno = proto.ReturnListaMatriculas()
-        retorno.sucesso = True
-        retorno.mensagem = "teste"
-        return retorno
+        ''''
+        Lista as disciplinas de um aluno informando seu RA, ano e semestre desejado
+        '''
+        conexao_bd = "rpc.db"
+        conn = sqlite3.connect(conexao_bd)
+
+        SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE = 'select a.ra, d.nome, m.nota, m.faltas from Aluno a, Disciplina d, Matricula m where d.codigo = m.cod_disciplina and a.ra = m.ra and a.ra = ? and m.ano = ? and m.semestre = ?'
+        cursor = conn.cursor()
+        result = cursor.execute(SELECT_DISCIPLINA_ALUNO_POR_SEMESTRE,(request.ra, request.ano, request.semestre))
+        lista_disciplinas = proto.ReturnListaMatriculas()
+        for resultado in result:
+            retorno_matricula = lista_disciplinas.matriculas.add()
+            retorno_matricula.ra = resultado[0]
+            retorno_matricula.nome_disciplina = resultado[1]
+            retorno_matricula.nota = resultado[2]
+            retorno_matricula.faltas = resultado[3]
+        lista_disciplinas.sucesso = True
+        lista_disciplinas.mensagem = "Sucesso ao buscar disciplinas do aluno"
+        return lista_disciplinas
 
 def main():
     port = "8181"

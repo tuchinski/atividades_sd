@@ -67,26 +67,26 @@ public class Principal {
         System.out.println("===========================================");
     }
 
-//    /**
-//     * Imprime de forma "correta" o parametro passado
-//     * @param listaMatriculas parametro para ser impresso na tela
-//     */
-//    public static void imprimeDisciplinasAluno(NotasProtos.ReturnListaMatriculas listaMatriculas) {
-//        if (listaMatriculas.getSucesso()){
-//            System.out.println("Sucesso");
-//            for(NotasProtos.RetornoMatricula mat: listaMatriculas.getMatriculasList()){
-//                System.out.println("----------------------------------------");
-//                System.out.println("RA: " + mat.getRa());
-//                System.out.println("Nome Disciplina: " + mat.getNomeDisciplina());
-//                System.out.println("Faltas: " + mat.getFaltas());
-//                System.out.println("Nota: " + mat.getNota());
-//                System.out.println("----------------------------------------");
-//            }
-//        }else{
-//            System.out.println("Erro");
-//            System.out.println(listaMatriculas.getMensagem());
-//        }
-//    }
+    /**
+     * Imprime de forma "correta" o parametro passado
+     * @param listaMatriculas parametro para ser impresso na tela
+     */
+    public static void imprimeDisciplinasAluno(ReturnListaMatriculas listaMatriculas) {
+        if (listaMatriculas.getSucesso()){
+            System.out.println("Sucesso");
+            for(RetornoMatricula mat: listaMatriculas.getMatriculasList()){
+                System.out.println("----------------------------------------");
+                System.out.println("RA: " + mat.getRa());
+                System.out.println("Nome Disciplina: " + mat.getNomeDisciplina());
+                System.out.println("Faltas: " + mat.getFaltas());
+                System.out.println("Nota: " + mat.getNota());
+                System.out.println("----------------------------------------");
+            }
+        }else{
+            System.out.println("Erro");
+            System.out.println(listaMatriculas.getMensagem());
+        }
+    }
 
     public static void main(String[] args) {
         // Cria a porta de conexao com o server e os datasInputs
@@ -195,6 +195,19 @@ public class Principal {
 
                 case 5:
                     System.out.println("Listar disciplinas, faltas e notas de um aluno");
+
+                    requestLista = RequestLista.newBuilder();
+
+                    System.out.println("Digite o RA:");
+                    requestLista.setRa(ler.nextInt());
+
+                    System.out.println("Digite o semestre:");
+                    requestLista.setSemestre(ler.nextInt());
+
+                    System.out.println("Digite o ano da disciplina:");
+                    requestLista.setAno(ler.nextInt());
+
+                    imprimeDisciplinasAluno(stub.listaDisciplinaAluno(requestLista.build()));
                     break;
 
                 }
