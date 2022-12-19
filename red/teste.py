@@ -5,6 +5,7 @@
 # FEITO! • Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
 
 import socket
+import threading
 import pythoncode.notas_pb2 as proto
 import sqlite3
 
@@ -126,6 +127,35 @@ def processa_request(request: bytes, db_conn: sqlite3.Connection):
         else:
             pass
 
+def conexao_recebida(conn: socket.socket, addr: tuple):
+    db_conn = sqlite3.connect(conexao_bd)
+    print(f"Conexao de {addr}")
+    while True:
+        # Recebe o cabecalho do cliente pra saber qual o tamanho da request
+        cabecalho = conn.recv(2)
+        if not cabecalho:
+            break
+        cabecalho_proto = proto.Header()
+        cabecalho_proto.ParseFromString(cabecalho)
+
+        # Espera a request com o tamanho enviado no cabeçalho
+        request = conn.recv(cabecalho_proto.tamanhoMensagem)
+        teste = proto.Request()
+        teste.ParseFromString(request)
+
+        # processa a request e retorna para o user
+        retorno = processa_request(request, db_conn)
+
+        # cria o cabeçalho de retorno, para informar ao cliente o tamanho da request
+        header = proto.Header()
+        header.tamanhoMensagem = len(retorno)
+
+        # envia o cabeçalho
+        conn.sendall(header.SerializeToString())
+
+        # envia o response
+        conn.sendall(retorno)
+
 def main():
 
     HOST = "127.0.0.1"  
@@ -134,36 +164,16 @@ def main():
     print("Iniciando server")
     db_conn = sqlite3.connect(conexao_bd)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # desocupa a porta assim que o server é finalizado
         s.bind((HOST,PORT))
         s.listen()
-        conn,addr = s.accept()
-        with conn:
-            print(f"Conexao de {addr}")
-            while True:
-                data = conn.recv(1024)
-                print(data)
-                teste = proto.Request()
-                teste.ParseFromString(data)
-                print("a", teste.rl.ano)
 
-                if not data:
-                    break
-                retorno = processa_request(data, db_conn)
+        while True:
+            conn,addr = s.accept()
+            threading.Thread(target=conexao_recebida, args=(conn,addr,)).start()
+        
+            
 
-                header = proto.Header()
-                header.tamanhoMensagem = len(retorno)
-
-                print("header",header)
-                print("tamanho", len(header.SerializeToString()))
-                conn.sendall(header.SerializeToString())
-
-                conn.sendall(retorno)
-
-
-
-                # conn.sendall(retorno)
-                # print(data)
-                # conn.sendall(data)
 
 def valida_codigo_disciplina(cod_disciplina: str, conn: sqlite3.Connection):
     """

@@ -177,6 +177,12 @@ public class Principal {
                         reqFaltas.setRm(reqMatFaltas);
                         msg = reqFaltas.build().toByteArray();
 
+                        // Criar cabeçalho para envio
+                        NotasProtos.Header cabecalhoEnvio = NotasProtos.Header.newBuilder()
+                                .setTamanhoMensagem(msg.length).build();
+                        out.write(cabecalhoEnvio.toByteArray());
+
+
                         // Enviando a request para o servidor
                         out.write(msg);
 
