@@ -55,6 +55,7 @@ public class Principal {
                 NotasProtos.Header header;
                 NotasProtos.RetornoDefault retorno;
                 NotasProtos.Header cabecalhoEnvio;
+                NotasProtos.RequestLista.Builder requestLista;
                 switch (escolha){
                     case 1:
                         // Pegando dados da nova matricula
@@ -217,7 +218,7 @@ public class Principal {
                     case 4:
                         System.out.println("Listar alunos de uma disciplina");
                         NotasProtos.Request.Builder requestAlunos = NotasProtos.Request.newBuilder();
-                        NotasProtos.RequestLista.Builder requestLista = NotasProtos.RequestLista.newBuilder();
+                        requestLista = NotasProtos.RequestLista.newBuilder();
 
                         System.out.println("Digite o Codigo da disciplina:");
                         requestLista.setCodDisciplina(ler.next());
@@ -263,6 +264,52 @@ public class Principal {
                         break;
                     case 5:
                         System.out.println("Listar disciplinas, faltas e notas de um aluno");
+
+                        NotasProtos.Request.Builder requestAluno = NotasProtos.Request.newBuilder();
+                        requestLista = NotasProtos.RequestLista.newBuilder();
+
+                        System.out.println("Digite o RA:");
+                        requestLista.setRa(ler.nextInt());
+
+                        System.out.println("Digite o semestre:");
+                        requestLista.setSemestre(ler.nextInt());
+
+                        System.out.println("Digite o ano da disciplina:");
+                        requestLista.setAno(ler.nextInt());
+
+
+                        requestLista.setTipoRequest(2);
+                        requestAluno.setRl(requestLista);
+                        msg = requestAluno.build().toByteArray();
+
+
+                        // Criar cabeçalho para envio
+                        cabecalhoEnvio = NotasProtos.Header.newBuilder()
+                                .setTamanhoMensagem(msg.length).build();
+                        out.write(cabecalhoEnvio.toByteArray());
+
+
+                        // Enviando a request para o servidor
+                        out.write(msg);
+
+                        // Buffer do cabeçalho
+                        buffer = new byte[2];
+
+                        // Recebendo o cabeçalho, que vai informar quantos bytes precisam ser lidos
+                        in.read(buffer);
+
+                        // Criando buffer para receber a informação de fato
+                        header = NotasProtos.Header.parseFrom(buffer);
+                        buffer = new byte[header.getTamanhoMensagem()];
+                        in.read(buffer);
+
+                        // Recebendo o retorno do servidor
+                        NotasProtos.ReturnListaMatriculas returnListaMatriculas = NotasProtos.ReturnListaMatriculas.parseFrom(buffer);
+                        System.out.println("------------------");
+                        System.out.println(returnListaMatriculas.getSucesso());
+                        System.out.println(returnListaMatriculas.getMensagem());
+                        System.out.println(returnListaMatriculas.getMatriculasList());
+
                         break;
 
                 }
