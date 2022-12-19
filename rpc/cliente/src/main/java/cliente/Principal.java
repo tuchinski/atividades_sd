@@ -105,46 +105,74 @@ public class Principal {
             imprimeMenu();
             Scanner ler = new Scanner(System.in);
             escolha = ler.nextInt();
-            System.out.println(escolha);
+            Matricula.Builder matricula;
 
-            // variáveis utilizadas na montagem da request
-            byte[] msg;
-            byte[] buffer;
-//            NotasProtos.Header header;
-//            NotasProtos.RetornoDefault retorno;
-//            NotasProtos.Header cabecalhoEnvio;
-//            NotasProtos.RequestLista.Builder requestLista;
             switch (escolha){
                 case 1:
                     // Pegando dados da nova matricula
                     Matricula mat = Matricula.newBuilder().setAno(2022).setRA(2).setSemestre(4).setCodDisciplina("GA3X1").build();
 
                     System.out.println("Inserir nova matricula");
-                    Matricula.Builder novaMat = Matricula.newBuilder();
+                    matricula = Matricula.newBuilder();
 
                     System.out.println("Digite o RA do aluno:");
-                    novaMat.setRA(ler.nextInt());
+                    matricula.setRA(ler.nextInt());
 
                     System.out.println("Digite o Codigo da disciplina:");
-                    novaMat.setCodDisciplina(ler.next());
+                    matricula.setCodDisciplina(ler.next());
 
                     System.out.println("Digite o ano da disciplina:");
-                    novaMat.setAno(ler.nextInt());
+                    matricula.setAno(ler.nextInt());
 
                     System.out.println("Digite o semestre da disciplina:");
-                    novaMat.setSemestre(ler.nextInt());
+                    matricula.setSemestre(ler.nextInt());
 
-                    RetornoDefault ret =  stub.inserirNovaMatricula(novaMat.build());
+                    RetornoDefault ret =  stub.inserirNovaMatricula(matricula.build());
                     imprimeRetornoDefault(ret);
-
                     break;
 
                 case 2:
                     System.out.println("Alterar notas");
+                    matricula = Matricula.newBuilder();
+
+                    System.out.println("Digite o RA do aluno:");
+                    matricula.setRA(ler.nextInt());
+
+                    System.out.println("Digite o Codigo da disciplina:");
+                    matricula.setCodDisciplina(ler.next());
+
+                    System.out.println("Digite o ano da disciplina:");
+                    matricula.setAno(ler.nextInt());
+
+                    System.out.println("Digite o semestre da disciplina:");
+                    matricula.setSemestre(ler.nextInt());
+
+                    System.out.println("Digite a nota:");
+                    matricula.setNota(ler.nextFloat());
+
+                    imprimeRetornoDefault(stub.alterarNotasMatricula(matricula.build()));
                     break;
 
                 case 3:
                     System.out.println("Alterar faltas");
+                    matricula = Matricula.newBuilder();
+
+                    System.out.println("Digite o RA do aluno:");
+                    matricula.setRA(ler.nextInt());
+
+                    System.out.println("Digite o Codigo da disciplina:");
+                    matricula.setCodDisciplina(ler.next());
+
+                    System.out.println("Digite o ano da disciplina:");
+                    matricula.setAno(ler.nextInt());
+
+                    System.out.println("Digite o semestre da disciplina:");
+                    matricula.setSemestre(ler.nextInt());
+
+                    System.out.println("Digite as faltas:");
+                    matricula.setFaltas(ler.nextInt());
+
+                    imprimeRetornoDefault(stub.alterarFaltasMatricula(matricula.build()));
                     break;
 
                 case 4:

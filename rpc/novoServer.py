@@ -54,14 +54,52 @@ class GerenciadorNotas(notas_rpc.GerenciadorNotas):
         return retorno
 
     def alterarNotasMatricula(self, request, context):
+        '''
+        altera as notas de uma matricula
+        '''
+        conexao_bd = "rpc.db"
+        conn = sqlite3.connect(conexao_bd)
+        UPDATE_NOTA_DISCIPLINA = 'update Matricula set nota = ? where ra = ? and cod_disciplina = ? and ano = ? and semestre = ?'
         retorno = proto.RetornoDefault()
-        retorno.mensagem = "teste"
-        retorno.sucesso = True
+
+        if not valida_codigo_disciplina(request.cod_disciplina, conn):
+            retorno.mensagem = "Codigo da disciplina invalido"
+            return retorno
+
+        cursor = conn.cursor()
+        result = cursor.execute(UPDATE_NOTA_DISCIPLINA, (request.nota, request.RA, request.cod_disciplina, request.ano, request.semestre))
+        if result.rowcount != 1:
+            conn.rollback()
+            retorno.mensagem = "não foi possível atualizar a nota, validar os dados informados"
+        else: 
+            retorno.mensagem = "Notas atualizadas com sucesso"
+            retorno.sucesso = True
+            conn.commit()
+        return retorno
 
     def alterarFaltasMatricula(self, request, context):
+        '''
+        Altera as faltas da matricula especificada
+        '''
+        conexao_bd = "rpc.db"
+        conn = sqlite3.connect(conexao_bd)
+        UPDATE_FALTAS_DISCIPLINA = 'update Matricula set faltas = ? where ra = ? and cod_disciplina = ? and ano = ? and semestre = ?'
         retorno = proto.RetornoDefault()
-        retorno.mensagem = "teste"
-        retorno.sucesso = True
+
+        if not valida_codigo_disciplina(request.cod_disciplina, conn):
+            retorno.mensagem = "Codigo da disciplina invalido"
+            return retorno
+
+
+        cursor = conn.cursor()
+        result = cursor.execute(UPDATE_FALTAS_DISCIPLINA, (request.faltas, request.RA, request.cod_disciplina, request.ano, request.semestre))
+        if result.rowcount != 1:
+            conn.rollback()
+            retorno.mensagem = "não foi possível atualizar as faltas, validar os dados informados"
+        else: 
+            conn.commit()
+            retorno.mensagem = "Faltas atualizadas com sucesso"
+            retorno.sucesso = True
         return retorno
 
     def listaAlunosDisciplina(self, request, context):
