@@ -1,5 +1,10 @@
+//
+//Descrição: Cliente para as requests do protocol buffer
+//Autores: Ilzimara e Leonardo
+//Data de criação: 07/09/2022
+//
+
 package cliente;
-import com.sun.jdi.PathSearchingVirtualMachine;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

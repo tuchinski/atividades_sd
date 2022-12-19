@@ -1,9 +1,8 @@
-# FEITO! • Inserção na tabela Matricula (notas e faltas são inseridas com valor padrão 0).
-# FEITO! • Alteração notas na tabela Matricula.
-# FEITO! • Alteração faltas na tabela Matricula.
-# FEITO! • Listagem de alunos (RA, nome, período) de uma disciplina informado a disciplina, ano e semestre. 
-# FEITO! • Listagem de disciplinas, faltas e notas (RA, nome, nota, faltas) de um aluno informado o ano e semestre.
-
+"""
+Descrição: Server para o protocol buffer
+Autores: Ilzimara e Leonardo
+Data de criação: 18/12/2022
+"""
 import socket
 import threading
 import pythoncode.notas_pb2 as proto
