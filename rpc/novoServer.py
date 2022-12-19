@@ -103,10 +103,37 @@ class GerenciadorNotas(notas_rpc.GerenciadorNotas):
         return retorno
 
     def listaAlunosDisciplina(self, request, context):
+        conexao_bd = "rpc.db"
+        conn = sqlite3.connect(conexao_bd)
+
+        """
+        Busca os alunos de acordo com o cod_disciplina, ano e semestre desejado
+        
+        Caso encontre ou não, utiliza a message ReturnListaAlunos
+        """
+        SELECT_BUSCA_ALUNOS_DISCIPLINA = "select a.* from Aluno A, disciplina d, Matricula m where d.codigo = m.cod_disciplina AND m.ra = a.ra and d.codigo = ? and ano = ? and semestre = ?"
         retorno = proto.ReturnListaAlunos()
+
+        # verifica se o código informado existe
+        # se não existir, retorna isso com uma msg padrão
+        if not valida_codigo_disciplina(request.cod_disciplina, conn):
+            retorno.sucesso = False
+            retorno.mensagem = "Codigo da disciplina invalido"
+            return retorno                  
+
+        # busca as disciplinas, e insere no response correspondente 
+        cursor = conn.cursor()
+        result = cursor.execute(SELECT_BUSCA_ALUNOS_DISCIPLINA, (request.cod_disciplina, request.ano, request.semestre))
+        for aluno in result.fetchall():
+            aluno_curso = retorno.listaAlunos.alunos.add()
+            aluno_curso.RA = aluno[0]
+            aluno_curso.nome = aluno[1]
+            aluno_curso.periodo = aluno[2]
+            aluno_curso.cod_curso = aluno[3]
         retorno.sucesso = True
-        retorno.mensagem = "teste"
+        retorno.mensagem = "Sucesso ao buscar os alunos"
         return retorno
+        
 
     def listaDisciplinaAluno(self, request, context):
         retorno = proto.ReturnListaMatriculas()

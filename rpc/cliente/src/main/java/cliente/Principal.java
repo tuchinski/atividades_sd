@@ -43,29 +43,29 @@ public class Principal {
         System.out.println(retorno.getMensagem());
         System.out.println("===========================================");
     }
-//
-//    /**
-//     * Imprime de forma "correta" o parametro passado
-//     * @param listaAlunos parametro para ser impresso na tela
-//     */
-//    public static void imprimeListaAlunos(NotasProtos.ReturnListaAlunos listaAlunos) {
-//        System.out.println("===========================================");
-//        if(listaAlunos.getSucesso()){
-//            System.out.println("Sucesso");
-//
-//            for (NotasProtos.Aluno aluno: listaAlunos.getListaAlunos().getAlunosList()){
-//                System.out.println("----------------------------------------");
-//                System.out.println("RA: " + aluno.getRA());
-//                System.out.println("Nome Aluno: " + aluno.getNome());
-//                System.out.println("Periodo: " + aluno.getPeriodo());
-//                System.out.println("----------------------------------------");
-//            }
-//        } else{
-//            System.out.println("Erro");
-//            System.out.println(listaAlunos.getMensagem());
-//        }
-//        System.out.println("===========================================");
-//    }
+
+    /**
+     * Imprime de forma "correta" o parametro passado
+     * @param listaAlunos parametro para ser impresso na tela
+     */
+    public static void imprimeListaAlunos(ReturnListaAlunos listaAlunos) {
+        System.out.println("===========================================");
+        if(listaAlunos.getSucesso()){
+            System.out.println("Sucesso");
+
+            for (Aluno aluno: listaAlunos.getListaAlunos().getAlunosList()){
+                System.out.println("----------------------------------------");
+                System.out.println("RA: " + aluno.getRA());
+                System.out.println("Nome Aluno: " + aluno.getNome());
+                System.out.println("Periodo: " + aluno.getPeriodo());
+                System.out.println("----------------------------------------");
+            }
+        } else{
+            System.out.println("Erro");
+            System.out.println(listaAlunos.getMensagem());
+        }
+        System.out.println("===========================================");
+    }
 
 //    /**
 //     * Imprime de forma "correta" o parametro passado
@@ -106,6 +106,8 @@ public class Principal {
             Scanner ler = new Scanner(System.in);
             escolha = ler.nextInt();
             Matricula.Builder matricula;
+            RequestLista.Builder requestLista;
+
 
             switch (escolha){
                 case 1:
@@ -177,6 +179,18 @@ public class Principal {
 
                 case 4:
                     System.out.println("Listar alunos de uma disciplina");
+                    requestLista = RequestLista.newBuilder();
+
+                    System.out.println("Digite o Codigo da disciplina:");
+                    requestLista.setCodDisciplina(ler.next());
+
+                    System.out.println("Digite o semestre:");
+                    requestLista.setSemestre(ler.nextInt());
+
+                    System.out.println("Digite o ano da disciplina:");
+                    requestLista.setAno(ler.nextInt());
+
+                    imprimeListaAlunos(stub.listaAlunosDisciplina(requestLista.build()));
                     break;
 
                 case 5:
