@@ -11,27 +11,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
-//byte[] msg;
-//        NotasProtos.Request.Builder req = NotasProtos.Request.newBuilder();
-//
-//        NotasProtos.Matricula.Builder matteste = NotasProtos.Matricula.newBuilder();
-//        matteste.setFaltas(10);
-//        matteste.setSemestre(1);
-//        matteste.setAno(2022);
-//        matteste.setCodDisciplina("LM31A");
-//        matteste.setRA(49);
-//
-//        NotasProtos.RequestMatricula.Builder rm = NotasProtos.RequestMatricula.newBuilder();
-//        rm.setMatricula(matteste);
-//        rm.setTipoRequest(3);
-//
-//        req.setRm(rm);
-//        NotasProtos.Request reqFinal = req.build();
-//
-//        msg = reqFinal.toByteArray();
-//
-//        out.write(msg);
-
 
 public class Principal {
     public static void imprimeMenu(){
