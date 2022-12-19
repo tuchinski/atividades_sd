@@ -13,6 +13,10 @@ conexao_bd = "database_com_dados-contrib-Daniel-Farina.db"
 GET_ALL_CURSOS = "SELECT * FROM curso"
 
 def mainTeste():
+
+    testeheader = proto.Header()
+    testeheader.tamanhoMensagem = 5000
+    print(len(testeheader.SerializeToString()))
     # conn = sqlite3.connect(conexao_bd)
     # cursor = conn.cursor()
     # cursos = cursor.execute(GET_ALL_CURSOS)
@@ -51,33 +55,33 @@ def mainTeste():
     # print(alterar_nota_matricula(23, "BCC36B", 2019, 7, 1.2, conn))
     # print(inserir_matricula(49, 'LM31A', "2022", 2, conn))
 
-    req = proto.Request()
-    # req.rm = proto.RequestMatricula()
-    req.rm.tipoRequest = 1
-    req.rm.matricula.RA = 49
-    req.rm.matricula.cod_disciplina = 'LM31A'
-    req.rm.matricula.ano = 2022
-    req.rm.matricula.semestre = 3
+    # req = proto.Request()
+    # # req.rm = proto.RequestMatricula()
+    # req.rm.tipoRequest = 1
+    # req.rm.matricula.RA = 49
+    # req.rm.matricula.cod_disciplina = 'LM31A'
+    # req.rm.matricula.ano = 2022
+    # req.rm.matricula.semestre = 3
 
-    a = req.SerializeToString()
-    print(a)
+    # a = req.SerializeToString()
+    # print(a)
 
-    req2 = proto.Request()
-    req2.rl.tipoRequest = 1
-    req2.rl.ano = 2019
-    req2.rl.semestre = 2
-    req2.rl.ra = 12
+    # req2 = proto.Request()
+    # req2.rl.tipoRequest = 1
+    # req2.rl.ano = 2019
+    # req2.rl.semestre = 2
+    # req2.rl.ra = 12
     
-    a2 = req2.SerializeToString()
-    print(a2)
+    # a2 = req2.SerializeToString()
+    # print(a2)
 
-    # print(req)
+    # # print(req)
 
-    teste = proto.Request()
-    print("-----------------")
-    print(teste.ParseFromString(a2))
-    print(teste)
-    print(teste.HasField("rm"))
+    # teste = proto.Request()
+    # print("-----------------")
+    # print(teste.ParseFromString(a2))
+    # print(teste)
+    # print(teste.HasField("rm"))
 
 
 def processa_request(request: bytes, db_conn: sqlite3.Connection):
@@ -137,7 +141,7 @@ def main():
             print(f"Conexao de {addr}")
             while True:
                 data = conn.recv(1024)
-                print(type(conn))
+                print(data)
                 teste = proto.Request()
                 teste.ParseFromString(data)
                 print("a", teste.rl.ano)
@@ -145,7 +149,19 @@ def main():
                 if not data:
                     break
                 retorno = processa_request(data, db_conn)
+
+                header = proto.Header()
+                header.tamanhoMensagem = len(retorno)
+
+                print("header",header)
+                print("tamanho", len(header.SerializeToString()))
+                conn.sendall(header.SerializeToString())
+
                 conn.sendall(retorno)
+
+
+
+                # conn.sendall(retorno)
                 # print(data)
                 # conn.sendall(data)
 

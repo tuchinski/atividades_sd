@@ -4,6 +4,10 @@ syntax = "proto3";
 // option java_package = "com.example.tutorial.protos";
 option java_outer_classname = "NotasProtos";
 
+message Header{
+    int32 tamanhoMensagem = 1;
+}
+
 message Request{
     oneof req {
         RequestMatricula rm = 1;
