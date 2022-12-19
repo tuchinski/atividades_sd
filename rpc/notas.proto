@@ -12,29 +12,9 @@ service GerenciadorNotas{
     rpc listaDisciplinaAluno (RequestLista) returns (ReturnListaMatriculas) {};
 }
 
-message Header{
-    int32 tamanhoMensagem = 1;
-}
-
-message Request{
-    oneof req {
-        RequestMatricula rm = 1;
-        RequestLista rl = 2;
-    }
-}
-
-message RequestMatricula{
-    // 1 -> Inserir Matricula
-    // 2 -> Alterar nota
-    // 3 -> Alterar falta
-    int32 tipoRequest = 1;
-    Matricula matricula = 2;
-}
-
 message RequestLista{
     // 1 -> Lista Alunos
     // 2 -> Lista disciplina, notas e faltas de um aluno
-    int32 tipoRequest = 1;
     int32 ano = 2;
     int32 semestre = 3;
     int32 ra = 4;

@@ -37,12 +37,6 @@ class Disciplina(_message.Message):
     professor: str
     def __init__(self, codigo: _Optional[str] = ..., nome: _Optional[str] = ..., professor: _Optional[str] = ..., cod_curso: _Optional[int] = ...) -> None: ...
 
-class Header(_message.Message):
-    __slots__ = ["tamanhoMensagem"]
-    TAMANHOMENSAGEM_FIELD_NUMBER: _ClassVar[int]
-    tamanhoMensagem: int
-    def __init__(self, tamanhoMensagem: _Optional[int] = ...) -> None: ...
-
 class ListaAlunos(_message.Message):
     __slots__ = ["alunos"]
     ALUNOS_FIELD_NUMBER: _ClassVar[int]
@@ -65,35 +59,17 @@ class Matricula(_message.Message):
     semestre: int
     def __init__(self, RA: _Optional[int] = ..., cod_disciplina: _Optional[str] = ..., ano: _Optional[int] = ..., semestre: _Optional[int] = ..., nota: _Optional[float] = ..., faltas: _Optional[int] = ...) -> None: ...
 
-class Request(_message.Message):
-    __slots__ = ["rl", "rm"]
-    RL_FIELD_NUMBER: _ClassVar[int]
-    RM_FIELD_NUMBER: _ClassVar[int]
-    rl: RequestLista
-    rm: RequestMatricula
-    def __init__(self, rm: _Optional[_Union[RequestMatricula, _Mapping]] = ..., rl: _Optional[_Union[RequestLista, _Mapping]] = ...) -> None: ...
-
 class RequestLista(_message.Message):
-    __slots__ = ["ano", "cod_disciplina", "ra", "semestre", "tipoRequest"]
+    __slots__ = ["ano", "cod_disciplina", "ra", "semestre"]
     ANO_FIELD_NUMBER: _ClassVar[int]
     COD_DISCIPLINA_FIELD_NUMBER: _ClassVar[int]
     RA_FIELD_NUMBER: _ClassVar[int]
     SEMESTRE_FIELD_NUMBER: _ClassVar[int]
-    TIPOREQUEST_FIELD_NUMBER: _ClassVar[int]
     ano: int
     cod_disciplina: str
     ra: int
     semestre: int
-    tipoRequest: int
-    def __init__(self, tipoRequest: _Optional[int] = ..., ano: _Optional[int] = ..., semestre: _Optional[int] = ..., ra: _Optional[int] = ..., cod_disciplina: _Optional[str] = ...) -> None: ...
-
-class RequestMatricula(_message.Message):
-    __slots__ = ["matricula", "tipoRequest"]
-    MATRICULA_FIELD_NUMBER: _ClassVar[int]
-    TIPOREQUEST_FIELD_NUMBER: _ClassVar[int]
-    matricula: Matricula
-    tipoRequest: int
-    def __init__(self, tipoRequest: _Optional[int] = ..., matricula: _Optional[_Union[Matricula, _Mapping]] = ...) -> None: ...
+    def __init__(self, ano: _Optional[int] = ..., semestre: _Optional[int] = ..., ra: _Optional[int] = ..., cod_disciplina: _Optional[str] = ...) -> None: ...
 
 class RetornoDefault(_message.Message):
     __slots__ = ["mensagem", "sucesso"]
