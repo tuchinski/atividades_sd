@@ -25,7 +25,6 @@ def main():
 
     # publicando os tweets na fila
     for tweet in response.data:
-        print(tweet.text)
         channel.exchange_declare(exchange="tweets", exchange_type='direct')
         channel.basic_publish(exchange='', routing_key="tweets", body= tweet.text)
     
