@@ -33,21 +33,21 @@ public class Principal {
      * Imprime de forma "correta" o parametro passado
      * @param retorno parametro para ser impresso na tela
      */
-//    public static void imprimeRetornoDefault(NotasProtos.RetornoDefault retorno){
-//        System.out.println("===========================================");
-//        if (retorno.getSucesso()){
-//            System.out.println("Sucesso");
-//        } else {
-//            System.out.println("Erro ao realizar operação");
-//        }
-//        System.out.println(retorno.getMensagem());
-//        System.out.println("===========================================");
-//    }
-
-    /**
-     * Imprime de forma "correta" o parametro passado
-     * @param listaAlunos parametro para ser impresso na tela
-     */
+    public static void imprimeRetornoDefault(RetornoDefault retorno){
+        System.out.println("===========================================");
+        if (retorno.getSucesso()){
+            System.out.println("Sucesso");
+        } else {
+            System.out.println("Erro ao realizar operação");
+        }
+        System.out.println(retorno.getMensagem());
+        System.out.println("===========================================");
+    }
+//
+//    /**
+//     * Imprime de forma "correta" o parametro passado
+//     * @param listaAlunos parametro para ser impresso na tela
+//     */
 //    public static void imprimeListaAlunos(NotasProtos.ReturnListaAlunos listaAlunos) {
 //        System.out.println("===========================================");
 //        if(listaAlunos.getSucesso()){
@@ -67,10 +67,10 @@ public class Principal {
 //        System.out.println("===========================================");
 //    }
 
-    /**
-     * Imprime de forma "correta" o parametro passado
-     * @param listaMatriculas parametro para ser impresso na tela
-     */
+//    /**
+//     * Imprime de forma "correta" o parametro passado
+//     * @param listaMatriculas parametro para ser impresso na tela
+//     */
 //    public static void imprimeDisciplinasAluno(NotasProtos.ReturnListaMatriculas listaMatriculas) {
 //        if (listaMatriculas.getSucesso()){
 //            System.out.println("Sucesso");
@@ -95,6 +95,9 @@ public class Principal {
                 .usePlaintext()
                 .build();
 
+        GerenciadorNotasGrpc.GerenciadorNotasBlockingStub stub = GerenciadorNotasGrpc.newBlockingStub(channel);
+
+
         int escolha = -1;
         // fica dentro do menu até que o usuário saia
         while(escolha != 0){
@@ -114,7 +117,26 @@ public class Principal {
             switch (escolha){
                 case 1:
                     // Pegando dados da nova matricula
+                    Matricula mat = Matricula.newBuilder().setAno(2022).setRA(2).setSemestre(4).setCodDisciplina("GA3X1").build();
+
                     System.out.println("Inserir nova matricula");
+                    Matricula.Builder novaMat = Matricula.newBuilder();
+
+                    System.out.println("Digite o RA do aluno:");
+                    novaMat.setRA(ler.nextInt());
+
+                    System.out.println("Digite o Codigo da disciplina:");
+                    novaMat.setCodDisciplina(ler.next());
+
+                    System.out.println("Digite o ano da disciplina:");
+                    novaMat.setAno(ler.nextInt());
+
+                    System.out.println("Digite o semestre da disciplina:");
+                    novaMat.setSemestre(ler.nextInt());
+
+                    RetornoDefault ret =  stub.inserirNovaMatricula(novaMat.build());
+                    imprimeRetornoDefault(ret);
+
                     break;
 
                 case 2:

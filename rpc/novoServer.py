@@ -23,11 +23,13 @@ def valida_codigo_disciplina(cod_disciplina: str, conn: sqlite3.Connection):
 class GerenciadorNotas(notas_rpc.GerenciadorNotas):
 
     def inserirNovaMatricula(self, request:proto.Matricula , context):
-        conexao_bd = "rpc.db"
-        db_conn = sqlite3.connect(conexao_bd)
         """
         insere uma nova matricula no banco
         """
+
+        print("entrou")
+        conexao_bd = "rpc.db"
+        db_conn = sqlite3.connect(conexao_bd)
         INSERT_MATRICULA =  'insert into Matricula values(?,?,?,?,?,?)'
         retorno = proto.RetornoDefault()        
 
