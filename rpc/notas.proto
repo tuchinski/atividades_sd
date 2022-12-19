@@ -4,6 +4,14 @@ syntax = "proto3";
 option java_package = "cliente";
 option java_outer_classname = "NotasProtos";
 
+service GerenciadorNotas{
+    rpc inserirNovaMatricula (Matricula) returns (RetornoDefault) {};
+    rpc alterarNotasMatricula (Matricula) returns (RetornoDefault) {};
+    rpc alterarFaltasMatricula (Matricula) returns (RetornoDefault) {};
+    rpc listaAlunosDisciplina (RequestLista) returns (ReturnListaAlunos) {};
+    rpc listaDisciplinaAluno (RequestLista) returns (ReturnListaMatriculas) {};
+}
+
 message Header{
     int32 tamanhoMensagem = 1;
 }
