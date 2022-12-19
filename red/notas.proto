@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 // option java_multiple_files = true;
- option java_package = "cliente";
+option java_package = "cliente";
 option java_outer_classname = "NotasProtos";
 
 message Header{
@@ -81,11 +81,6 @@ message RetornoMatricula {
 message RetornoDefault {
     bool sucesso = 1;
     string mensagem = 2;
-}
-
-
-message ListaCursos{
-    repeated Curso cursos = 1;
 }
 
 message ReturnListaAlunos{
