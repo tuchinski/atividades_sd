@@ -1,4 +1,6 @@
 package cliente;
+import com.sun.jdi.PathSearchingVirtualMachine;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -34,8 +36,56 @@ public class Principal {
         System.out.println("3 -> Alterar faltas");
         System.out.println("4 -> Listar alunos de uma disciplina");
         System.out.println("5 -> Listar disciplinas, faltas e notas de um aluno");
-        System.out.println("6 -> Sair");
+        System.out.println("0 -> Sair");
     }
+
+    public static void imprimeRetornoDefault(NotasProtos.RetornoDefault retorno){
+        System.out.println("===========================================");
+        if (retorno.getSucesso()){
+            System.out.println("Sucesso");
+        } else {
+            System.out.println("Erro ao realizar operação");
+        }
+        System.out.println(retorno.getMensagem());
+        System.out.println("===========================================");
+    }
+
+    public static void imprimeListaAlunos(NotasProtos.ReturnListaAlunos listaAlunos) {
+        System.out.println("===========================================");
+        if(listaAlunos.getSucesso()){
+            System.out.println("Sucesso");
+
+            for (NotasProtos.Aluno aluno: listaAlunos.getListaAlunos().getAlunosList()){
+                System.out.println("----------------------------------------");
+                System.out.println("RA: " + aluno.getRA());
+                System.out.println("Nome Aluno: " + aluno.getNome());
+                System.out.println("Periodo: " + aluno.getPeriodo());
+                System.out.println("----------------------------------------");
+            }
+        } else{
+            System.out.println("Erro");
+            System.out.println(listaAlunos.getMensagem());
+        }
+        System.out.println("===========================================");
+    }
+
+    public static void imprimeDisciplinasAluno(NotasProtos.ReturnListaMatriculas listaMatriculas) {
+        if (listaMatriculas.getSucesso()){
+            System.out.println("Sucesso");
+            for(NotasProtos.RetornoMatricula mat: listaMatriculas.getMatriculasList()){
+                System.out.println("----------------------------------------");
+                System.out.println("RA: " + mat.getRa());
+                System.out.println("Nome Disciplina: " + mat.getNomeDisciplina());
+                System.out.println("Faltas: " + mat.getFaltas());
+                System.out.println("Nota: " + mat.getNota());
+                System.out.println("----------------------------------------");
+            }
+        }else{
+            System.out.println("Erro");
+            System.out.println(listaMatriculas.getMensagem());
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         DataInputStream in;
@@ -44,14 +94,14 @@ public class Principal {
             Socket clientSocket = new Socket("127.0.0.1", port);
             in = new DataInputStream(clientSocket.getInputStream());
             out = new DataOutputStream(clientSocket.getOutputStream());
-            int escolha = 0;
-            while(escolha != 6){
+            int escolha = -1;
+            while(escolha != 0){
                 imprimeMenu();
                 Scanner ler = new Scanner(System.in);
                 escolha = ler.nextInt();
                 System.out.println(escolha);
                 byte[] msg;
-                byte[] buffer = new byte[4000];
+                byte[] buffer;
                 NotasProtos.Header header;
                 NotasProtos.RetornoDefault retorno;
                 NotasProtos.Header cabecalhoEnvio;
@@ -102,11 +152,7 @@ public class Principal {
                         in.read(buffer);
 
                         // Recebendo o retorno do servidor
-                        retorno = NotasProtos.RetornoDefault.parseFrom(buffer);
-                        System.out.println("------------------");
-                        System.out.println(retorno.getSucesso());
-                        System.out.println(retorno.getMensagem());
-
+                        imprimeRetornoDefault(NotasProtos.RetornoDefault.parseFrom(buffer));
                         break;
 
                     case 2:
@@ -155,12 +201,9 @@ public class Principal {
                         buffer = new byte[header.getTamanhoMensagem()];
                         in.read(buffer);
 
-                        // Recebendo o retorno do servidor
-                        retorno = NotasProtos.RetornoDefault.parseFrom(buffer);
-                        System.out.println("------------------");
-                        System.out.println(retorno.getSucesso());
-                        System.out.println(retorno.getMensagem());
 
+                        // Recebendo o retorno do servidor
+                        imprimeRetornoDefault(NotasProtos.RetornoDefault.parseFrom(buffer));
                         break;
                     case 3:
                         System.out.println("Alterar faltas");
@@ -210,10 +253,7 @@ public class Principal {
                         in.read(buffer);
 
                         // Recebendo o retorno do servidor
-                        retorno = NotasProtos.RetornoDefault.parseFrom(buffer);
-                        System.out.println("------------------");
-                        System.out.println(retorno.getSucesso());
-                        System.out.println(retorno.getMensagem());
+                        imprimeRetornoDefault(NotasProtos.RetornoDefault.parseFrom(buffer));
                         break;
                     case 4:
                         System.out.println("Listar alunos de uma disciplina");
@@ -255,12 +295,7 @@ public class Principal {
                         in.read(buffer);
 
                         // Recebendo o retorno do servidor
-                        NotasProtos.ReturnListaAlunos retornoListaAlunos = NotasProtos.ReturnListaAlunos.parseFrom(buffer);
-                        System.out.println("------------------");
-                        System.out.println(retornoListaAlunos.getSucesso());
-                        System.out.println(retornoListaAlunos.getMensagem());
-                        System.out.println(retornoListaAlunos.getListaAlunos());
-
+                        imprimeListaAlunos(NotasProtos.ReturnListaAlunos.parseFrom(buffer));
                         break;
                     case 5:
                         System.out.println("Listar disciplinas, faltas e notas de um aluno");
@@ -304,12 +339,7 @@ public class Principal {
                         in.read(buffer);
 
                         // Recebendo o retorno do servidor
-                        NotasProtos.ReturnListaMatriculas returnListaMatriculas = NotasProtos.ReturnListaMatriculas.parseFrom(buffer);
-                        System.out.println("------------------");
-                        System.out.println(returnListaMatriculas.getSucesso());
-                        System.out.println(returnListaMatriculas.getMensagem());
-                        System.out.println(returnListaMatriculas.getMatriculasList());
-
+                        imprimeDisciplinasAluno(NotasProtos.ReturnListaMatriculas.parseFrom(buffer));
                         break;
 
                 }
