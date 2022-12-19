@@ -1,8 +1,8 @@
 syntax = "proto3";
 
- option java_multiple_files = true;
+// option java_multiple_files = true;
 option java_package = "cliente";
-//option java_outer_classname = "NotasProtos";
+option java_outer_classname = "NotasProtos";
 
 service GerenciadorNotas{
     rpc inserirNovaMatricula (Matricula) returns (RetornoDefault) {};
@@ -12,29 +12,9 @@ service GerenciadorNotas{
     rpc listaDisciplinaAluno (RequestLista) returns (ReturnListaMatriculas) {};
 }
 
-message Header{
-    int32 tamanhoMensagem = 1;
-}
-
-message Request{
-    oneof req {
-        RequestMatricula rm = 1;
-        RequestLista rl = 2;
-    }
-}
-
-message RequestMatricula{
-    // 1 -> Inserir Matricula
-    // 2 -> Alterar nota
-    // 3 -> Alterar falta
-    int32 tipoRequest = 1;
-    Matricula matricula = 2;
-}
-
 message RequestLista{
     // 1 -> Lista Alunos
     // 2 -> Lista disciplina, notas e faltas de um aluno
-    int32 tipoRequest = 1;
     int32 ano = 2;
     int32 semestre = 3;
     int32 ra = 4;
@@ -50,7 +30,7 @@ message Aluno{
     int32 RA = 1;
     string nome = 2;
     int32 periodo = 3;
-    int32 cod_curso = 4;    
+    int32 cod_curso = 4;
 }
 
 message Matricula{
@@ -66,7 +46,7 @@ message Disciplina{
     string codigo = 1;
     string nome = 2;
     string professor = 3;
-    int32 cod_curso = 4;    
+    int32 cod_curso = 4;
 }
 
 message ListaAlunos{

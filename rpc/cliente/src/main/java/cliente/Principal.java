@@ -108,7 +108,6 @@ public class Principal {
             switch (escolha){
                 case 1:
                     // Pegando dados da nova matricula
-                    Matricula mat = Matricula.newBuilder().setAno(2022).setRA(2).setSemestre(4).setCodDisciplina("GA3X1").build();
 
                     System.out.println("Inserir nova matricula");
                     matricula = Matricula.newBuilder();
