@@ -54,6 +54,7 @@ public class Principal {
                 byte[] buffer = new byte[4000];
                 NotasProtos.Header header;
                 NotasProtos.RetornoDefault retorno;
+                NotasProtos.Header cabecalhoEnvio;
                 switch (escolha){
                     case 1:
                         // Pegando dados da nova matricula
@@ -79,6 +80,11 @@ public class Principal {
                         reqMat.setMatricula(novaMat);
                         req.setRm(reqMat);
                         msg = req.build().toByteArray();
+
+                        // Criar cabeçalho para envio
+                        cabecalhoEnvio = NotasProtos.Header.newBuilder()
+                                .setTamanhoMensagem(msg.length).build();
+                        out.write(cabecalhoEnvio.toByteArray());
 
                         // Enviando a request para o servidor
                         out.write(msg);
@@ -129,6 +135,11 @@ public class Principal {
                         reqNotas.setRm(reqMatNotas);
                         msg = reqNotas.build().toByteArray();
 
+                        // Criar cabeçalho para envio
+                        cabecalhoEnvio = NotasProtos.Header.newBuilder()
+                                .setTamanhoMensagem(msg.length).build();
+                        out.write(cabecalhoEnvio.toByteArray());
+
                         // Enviando a request para o servidor
                         out.write(msg);
 
@@ -178,7 +189,7 @@ public class Principal {
                         msg = reqFaltas.build().toByteArray();
 
                         // Criar cabeçalho para envio
-                        NotasProtos.Header cabecalhoEnvio = NotasProtos.Header.newBuilder()
+                        cabecalhoEnvio = NotasProtos.Header.newBuilder()
                                 .setTamanhoMensagem(msg.length).build();
                         out.write(cabecalhoEnvio.toByteArray());
 
@@ -205,6 +216,50 @@ public class Principal {
                         break;
                     case 4:
                         System.out.println("Listar alunos de uma disciplina");
+                        NotasProtos.Request.Builder requestAlunos = NotasProtos.Request.newBuilder();
+                        NotasProtos.RequestLista.Builder requestLista = NotasProtos.RequestLista.newBuilder();
+
+                        System.out.println("Digite o Codigo da disciplina:");
+                        requestLista.setCodDisciplina(ler.next());
+
+                        System.out.println("Digite o semestre:");
+                        requestLista.setSemestre(ler.nextInt());
+
+                        System.out.println("Digite o ano da disciplina:");
+                        requestLista.setAno(ler.nextInt());
+
+                        requestLista.setTipoRequest(1);
+                        requestAlunos.setRl(requestLista);
+                        msg = requestAlunos.build().toByteArray();
+
+
+                        // Criar cabeçalho para envio
+                        cabecalhoEnvio = NotasProtos.Header.newBuilder()
+                                .setTamanhoMensagem(msg.length).build();
+                        out.write(cabecalhoEnvio.toByteArray());
+
+
+                        // Enviando a request para o servidor
+                        out.write(msg);
+
+                        // Buffer do cabeçalho
+                        buffer = new byte[2];
+
+                        // Recebendo o cabeçalho, que vai informar quantos bytes precisam ser lidos
+                        in.read(buffer);
+
+                        // Criando buffer para receber a informação de fato
+                        header = NotasProtos.Header.parseFrom(buffer);
+                        buffer = new byte[header.getTamanhoMensagem()];
+                        in.read(buffer);
+
+                        // Recebendo o retorno do servidor
+                        NotasProtos.ReturnListaAlunos retornoListaAlunos = NotasProtos.ReturnListaAlunos.parseFrom(buffer);
+                        System.out.println("------------------");
+                        System.out.println(retornoListaAlunos.getSucesso());
+                        System.out.println(retornoListaAlunos.getMensagem());
+                        System.out.println(retornoListaAlunos.getListaAlunos());
+
                         break;
                     case 5:
                         System.out.println("Listar disciplinas, faltas e notas de um aluno");

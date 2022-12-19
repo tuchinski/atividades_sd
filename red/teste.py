@@ -120,10 +120,10 @@ def processa_request(request: bytes, db_conn: sqlite3.Connection):
         cod_disciplina = req_proto.rl.cod_disciplina
         if tipo_request == 1:
             # lista alunos
-            return busca_alunos_por_disciplina(cod_disciplina, ano, semestre, db_conn)
+            return busca_alunos_por_disciplina(cod_disciplina, ano, semestre, db_conn).SerializeToString()
         elif tipo_request == 2:
             # Lista disciplina, notas e faltas do aluno
-            return lista_disciplinas_aluno_por_semestre(ra, ano, semestre, db_conn)
+            return lista_disciplinas_aluno_por_semestre(ra, ano, semestre, db_conn).SerializeToString()
         else:
             pass
 
@@ -204,7 +204,7 @@ def busca_alunos_por_disciplina(cod_disciplina: str, ano:int, semestre: int, con
     if not valida_codigo_disciplina(cod_disciplina, conn):
         retorno.sucesso = False
         retorno.mensagem = "Codigo da disciplina invalido"
-        return retorno
+        return retorno                  
 
     # busca as disciplinas, e insere no response correspondente 
     cursor = conn.cursor()
