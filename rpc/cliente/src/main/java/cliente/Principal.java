@@ -9,10 +9,6 @@ package cliente;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Scanner;
 
 public class Principal {
@@ -89,12 +85,12 @@ public class Principal {
     }
 
     public static void main(String[] args) {
-        // Cria a porta de conexao com o server e os datasInputs
 
+        // Cria o canal de conexao
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8181)
                 .usePlaintext()
                 .build();
-
+        // stub
         GerenciadorNotasGrpc.GerenciadorNotasBlockingStub stub = GerenciadorNotasGrpc.newBlockingStub(channel);
 
 
