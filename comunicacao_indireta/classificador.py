@@ -8,7 +8,7 @@ def main():
     canal = connection.channel()
 
      # declara a lista tweets
-    # canal.queue_declare(queue="tweets")
+    canal.exchange_declare(exchange="exchange_twitter", exchange_type='direct')
 
     # declarando a fila para cada assunto
     for assunto in TOPICS:
@@ -31,9 +31,9 @@ def main():
                     # Enviando o tweet pra fila correta
                     canal.basic_publish(exchange="exchange_twitter", routing_key=topic, body=body)
                     break
-            print("tweet ignorado")
 
     # consumindo os dados da fila "tweets"
+    canal.queue_declare(queue="tweets")
     canal.basic_consume(queue="tweets", on_message_callback=callback, auto_ack=True)
 
     # inicia o consumo da fila

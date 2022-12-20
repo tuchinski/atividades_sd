@@ -34,6 +34,7 @@ def main():
 
 
     # Consumindo a lista desejada
+    channel.queue_declare(queue=f"queue_{topico_escolhido}")
     channel.basic_consume(queue=f"queue_{topico_escolhido}", on_message_callback=callback, auto_ack=True)
     channel.start_consuming()
 
