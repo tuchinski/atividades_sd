@@ -4,38 +4,37 @@ from config import *
 
 def main():
 
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='localhost'))
+    # Verificando se o usuário digitou o assunto que quer acompanhar
+    try:
+        topico_escolhido = sys.argv[1]
+    except IndexError:
+        print("informar o tópico a ser escolhido: python3 cliente.py <nome_topico>")
+        exit(1)
+    
+    # Validando se o assunto digitado está dentro dos topicos pré-definidos
+    if topico_escolhido not in TOPICS:
+        print("Tópico não esta na lista")
+        print("Topicos disponiveis", TOPICS)
+        exit(1)
+
+    # Criando conexão com o rabbitMQ
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
 
-    # Declaro a fila para troca
-    channel.exchange_declare(exchange='direct_logs', exchange_type='direct')
 
-    result = channel.queue_declare(queue='', exclusive=True)
-    queue_name = result.method.queue
-    topicos = sys.argv[1:]
+    print('Esperando novas informações na fila.')
 
-    for i in range(len(topicos)):
-        if topicos[i] not in TOPICS:
-            sys.stderr.write("Necessario se cadastrar em um dos topicos disponiveis: \n", topicos)
-            sys.exit(1)
-
-    for topico in topicos:
-        channel.queue_bind(exchange='direct_logs', queue=queue_name, routing_key=topico)
-
-    print(' [*] Waiting for logs. To exit press CTRL+C')
-
-    # Printo o retorn
     def callback(ch, method, properties, body):
+        """
+        Método de callback que imprime o tweet da fila
+        """
         data = body.decode()
-        print("%r" % (method.routing_key))
         print(data)
         print("------------------------------------------------------")
 
 
-    # Consumindo a lista
-    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-
+    # Consumindo a lista desejada
+    channel.basic_consume(queue=f"queue_{topico_escolhido}", on_message_callback=callback, auto_ack=True)
     channel.start_consuming()
 
 if __name__ == '__main__':

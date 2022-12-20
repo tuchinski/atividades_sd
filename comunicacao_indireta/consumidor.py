@@ -18,15 +18,19 @@ def main():
     # declarando a fila "tweets"
     channel.queue_declare(queue=QUEUE)
 
+    # declarando a exchange
+    channel.exchange_declare(exchange="exchange_twitter", exchange_type='direct')
+
+    channel.queue_bind(queue=QUEUE, exchange="exchange_twitter", routing_key="tweets")
+
     query = ' OR '.join(TOPICS)
 
     # buscando os tweets com os tópicos
-    response = client.search_recent_tweets(query=query, max_results=100)
+    response = client.search_recent_tweets(query=query, max_results=20)
 
     # publicando os tweets na fila
     for tweet in response.data:
-        channel.exchange_declare(exchange="tweets", exchange_type='direct')
-        channel.basic_publish(exchange='', routing_key="tweets", body= tweet.text)
+        channel.basic_publish(exchange="exchange_twitter", routing_key="tweets", body= tweet.text)
     
     connection.close()
     
